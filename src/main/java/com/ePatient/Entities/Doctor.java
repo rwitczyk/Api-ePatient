@@ -7,19 +7,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Date;
+import java.util.List;
 
 @Entity
-@NoArgsConstructor
 @Data
-public class Patient {
+@NoArgsConstructor
+public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     String name;
     String surname;
-    Date dateOfBirth;
-    String pesel;
+    String profession;
+    String roomNumber;
     String phoneNumber;
-    String doctorId;
+    List<Dates> days;
 }

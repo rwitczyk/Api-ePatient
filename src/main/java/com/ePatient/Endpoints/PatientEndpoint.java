@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
@@ -20,31 +22,43 @@ public class PatientEndpoint {
     }
 
     @PostMapping("patient/add")
-    public ResponseEntity<String> addPatientAccount(@RequestBody Patient patient) {
-        boolean ifPatientAdded = patientService.addPatient(patient);
+    public ResponseEntity addPatientAccount(@RequestBody Patient patient) {
+        patientService.addPatient(patient);
+        return new ResponseEntity<>(patient, HttpStatus.OK);
+    }
 
-        if (ifPatientAdded)
-        {
-            return new ResponseEntity<>("Pomyslnie dodano konto", HttpStatus.OK);
-        }
-        else
-        {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("patient/id/{id}")
+    public ResponseEntity<Patient> getPatientById(@PathVariable int id)
+    {
+        Patient patient = patientService.getPatientById(id);
+        return new ResponseEntity<>(patient, HttpStatus.OK);
     }
 
     @GetMapping("patient/delete/{id}")
-    public ResponseEntity<String> deletePatientById(@PathVariable int id)
+    public ResponseEntity deletePatientById(@PathVariable int id)
     {
-        boolean ifPatientDeleted = patientService.deletePatient(id);
+        patientService.deletePatient(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-        if (ifPatientDeleted)
-        {
-            return new ResponseEntity<>("Pomyslnie dodano konto", HttpStatus.OK);
-        }
-        else
-        {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("patients/")
+    public ResponseEntity<Iterable<Patient>> getAllPatients()
+    {
+        Iterable<Patient> patients = patientService.getAllPatients();
+        return new ResponseEntity<>(patients,HttpStatus.OK);
+    }
+
+    @GetMapping("patient/pesel/{peselNumber}")
+    public ResponseEntity<Patient> getPatientByPeselNumber(@PathVariable String peselNumber)
+    {
+        Patient patient = patientService.getPatientByPesel(peselNumber);
+        return new ResponseEntity<>(patient,HttpStatus.OK);
+    }
+
+    @GetMapping("patient/doctorid/{id}")
+    public ResponseEntity<List<Patient>> getPatientsByDoctorId(@PathVariable int id)
+    {
+        List<Patient> patients = patientService.getPatientsByDoctorId(id);
+        return new ResponseEntity<>(patients,HttpStatus.OK);
     }
 }

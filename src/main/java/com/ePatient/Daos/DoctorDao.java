@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Date;
 
 public interface DoctorDao extends JpaRepository<Doctor, Integer> {
-    Doctor getDoctorById(int id);
+    Doctor getDoctorByDoctorId(int id);
     Doctor getDoctorsByDays(Date date);
 }

@@ -15,11 +15,11 @@ import java.util.Date;
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    int patientId;
     String name;
     String surname;
     Date dateOfBirth;
     String pesel;
     String phoneNumber;
-    String doctorId;
+    int doctorId;
 }

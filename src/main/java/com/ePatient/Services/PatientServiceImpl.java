@@ -25,24 +25,24 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public void deletePatient(int id) {
-        Patient patient = getPatientById(id);
+    public void deletePatient(int patientId) {
+        Patient patient = getPatientById(patientId);
         if(patient != null) {
             patientDao.delete(patient);
         }
         else {
-            throw new PatientNotFoundException("Nie znaleziono pacjenta o takim id:" + id);
+            throw new PatientNotFoundException("Nie znaleziono pacjenta o takim id:" + patientId);
         }
     }
 
     @Override
-    public Patient getPatientById(int id) {
-        Patient patient =  patientDao.getPatientById(id);
+    public Patient getPatientById(int patientId) {
+        Patient patient =  patientDao.getPatientByPatientId(patientId);
         if(patient != null)
         {
             return patient;
         }
-        throw new PatientNotFoundException("Nie znaleziono pacjenta o takim id:" + id);
+        throw new PatientNotFoundException("Nie znaleziono pacjenta o takim id:" + patientId);
     }
 
     @Override

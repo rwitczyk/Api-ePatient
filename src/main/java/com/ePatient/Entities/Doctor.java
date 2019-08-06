@@ -15,6 +15,8 @@ public class Doctor {
     int doctorId;
     String name;
     String surname;
+    String email;
+    String password;
     String profession;
     String roomNumber;
     String phoneNumber;

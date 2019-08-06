@@ -18,6 +18,8 @@ public class Patient {
     int patientId;
     String name;
     String surname;
+    String email;
+    String password;
     Date dateOfBirth;
     String pesel;
     String phoneNumber;

@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Map;
 
 @Entity
@@ -14,7 +14,7 @@ public class Dates {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int dateId;
-    Date date;
+    LocalDate date;
     @ElementCollection
     @MapKeyColumn(name="hour")
     @Column(name="isBusy")

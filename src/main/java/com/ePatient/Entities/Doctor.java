@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
@@ -13,12 +15,17 @@ public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int doctorId;
+    @NotBlank
     String name;
+    @NotBlank
     String surname;
+    @Email
     String email;
+    @NotBlank
     String password;
     String profession;
     String roomNumber;
+    @NotBlank
     String phoneNumber;
     @ElementCollection(targetClass=Dates.class)
     List<Dates> days;

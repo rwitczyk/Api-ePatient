@@ -15,18 +15,26 @@ public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int doctorId;
+
     @NotBlank
     String name;
+
     @NotBlank
     String surname;
+
     @Email
     String email;
+
     @NotBlank
     String password;
+
     String profession;
+
     String roomNumber;
+
     @NotBlank
     String phoneNumber;
+
     @ElementCollection(targetClass=Dates.class)
     List<Dates> days;
 }

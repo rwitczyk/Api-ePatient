@@ -14,7 +14,9 @@ public class Dates {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int dateId;
+
     LocalDate date;
+
     @ElementCollection
     @MapKeyColumn(name="hour")
     @Column(name="isBusy")

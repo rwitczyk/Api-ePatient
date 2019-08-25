@@ -18,18 +18,30 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int patientId;
+
     @NotBlank
     String name;
+
     @NotBlank
     String surname;
+
     @Email
     String email;
+
     @NotBlank
     String password;
+
     Date dateOfBirth;
+
     @NotBlank
     String pesel;
+
     @NotBlank
     String phoneNumber;
+
     int doctorId;
+
+    public String getSurname() {
+        return surname;
+    }
 }

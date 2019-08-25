@@ -1,8 +1,9 @@
 package com.ePatient.Services;
 
-import com.ePatient.Daos.PatientDao;
 import com.ePatient.Entities.Patient;
 import com.ePatient.Exceptions.PatientNotFoundException;
+import com.ePatient.Repository.PatientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -12,15 +13,16 @@ import java.util.List;
 @Transactional
 public class PatientServiceImpl implements PatientService {
 
-    private PatientDao patientDao;
+    private PatientRepository patientRepository;
 
-    public PatientServiceImpl(PatientDao patientDao) {
-        this.patientDao = patientDao;
+    @Autowired
+    public PatientServiceImpl(PatientRepository patientRepository) {
+        this.patientRepository = patientRepository;
     }
 
     @Override
     public boolean addPatient(Patient patient) {
-        patientDao.save(patient);
+        patientRepository.save(patient);
         return true;
     }
 
@@ -28,7 +30,7 @@ public class PatientServiceImpl implements PatientService {
     public void deletePatient(int patientId) {
         Patient patient = getPatientById(patientId);
         if(patient != null) {
-            patientDao.delete(patient);
+            patientRepository.delete(patient);
         }
         else {
             throw new PatientNotFoundException("Nie znaleziono pacjenta o takim id:" + patientId);
@@ -37,7 +39,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Patient getPatientById(int patientId) {
-        Patient patient =  patientDao.getPatientByPatientId(patientId);
+        Patient patient =  patientRepository.getPatientByPatientId(patientId);
         if(patient != null)
         {
             return patient;
@@ -47,7 +49,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Patient getPatientByPesel(String pesel) {
-        Patient patient = patientDao.getPatientByPesel(pesel);
+        Patient patient = patientRepository.getPatientByPesel(pesel);
         if(patient != null){
             return patient;
         }
@@ -56,7 +58,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Iterable<Patient> getAllPatients() {
-        Iterable<Patient> patients =  patientDao.findAll();
+        Iterable<Patient> patients =  patientRepository.findAll();
         if(patients != null)
         {
             return patients;
@@ -66,7 +68,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public List<Patient> getPatientsByDoctorId(int doctorId) {
-        List<Patient> patients = patientDao.getPatientsByDoctorId(doctorId);
+        List<Patient> patients = patientRepository.getPatientsByDoctorId(doctorId);
         if(patients.size() > 0){
             return patients;
         }

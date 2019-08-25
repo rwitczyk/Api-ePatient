@@ -1,42 +1,85 @@
 package com.ePatient.Services;
 
-import com.ePatient.Daos.DoctorDao;
+import com.ePatient.Entities.Dates;
 import com.ePatient.Entities.Doctor;
 import com.ePatient.Exceptions.DoctorNotFoundException;
+import com.ePatient.Repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
 public class DoctorServiceImpl implements DoctorService{
 
-    private DoctorDao doctorDao;
+    private DoctorRepository doctorRepository;
 
     @Autowired
-    public DoctorServiceImpl(DoctorDao doctorDao) {
-        this.doctorDao = doctorDao;
+    public DoctorServiceImpl(DoctorRepository doctorRepository) {
+        this.doctorRepository = doctorRepository;
     }
 
     @Override
     public void addDoctor(Doctor doctor) {
-        doctorDao.save(doctor);
+        List<Dates> list = new ArrayList<>();
+
+        list.add(prepareOneDay(LocalDate.now()));
+        list.add(prepareOneDay(LocalDate.now().plusDays(1)));
+        list.add(prepareOneDay(LocalDate.now().plusDays(2)));
+        list.add(prepareOneDay(LocalDate.now().plusDays(3)));
+        list.add(prepareOneDay(LocalDate.now().plusDays(4)));
+        list.add(prepareOneDay(LocalDate.now().plusDays(5)));
+        list.add(prepareOneDay(LocalDate.now().plusDays(6)));
+
+        doctor.setDays(list);
+        doctorRepository.save(doctor);
+    }
+
+    private Dates prepareOneDay(LocalDate date) {
+        Map<String,Boolean> listOfHours = new HashMap<>();
+        listOfHours.put("8:00", false);
+        listOfHours.put("8:30", false);
+        listOfHours.put("9:00", false);
+        listOfHours.put("9:30", false);
+        listOfHours.put("10:00", false);
+        listOfHours.put("10:30", false);
+        listOfHours.put("11:00", false);
+        listOfHours.put("11:30", false);
+        listOfHours.put("12:00", false);
+        listOfHours.put("12:30", false);
+        listOfHours.put("13:00", false);
+        listOfHours.put("13:30", false);
+        listOfHours.put("14:00", false);
+        listOfHours.put("14:30", false);
+        listOfHours.put("15:00", false);
+        listOfHours.put("15:30", false);
+        listOfHours.put("16:00", false);
+        listOfHours.put("16:30", false);
+
+        Dates dates = new Dates();
+        dates.setDate(date);
+        dates.setListOfHours(listOfHours);
+        return dates;
     }
 
     @Override
     public void deleteDoctorById(int doctorId) {
         Doctor doctor = getDoctorById(doctorId);
         if(doctor != null) {
-            doctorDao.delete(doctor);
+            doctorRepository.delete(doctor);
         }
         throw new DoctorNotFoundException("Podany doktor nie istnieje!");
     }
 
     @Override
     public Doctor getDoctorById(int doctorId) {
-        Doctor doctor = doctorDao.getDoctorByDoctorId(doctorId);
+        Doctor doctor = doctorRepository.getDoctorByDoctorId(doctorId);
         if(doctor != null) {
             return doctor;
         }
@@ -46,6 +89,6 @@ public class DoctorServiceImpl implements DoctorService{
 
     @Override
     public List<Doctor> getAllDoctors() {
-        return doctorDao.findAll();
+        return doctorRepository.findAll();
     }
 }

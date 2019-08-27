@@ -29,13 +29,10 @@ public class DoctorServiceImpl implements DoctorService{
     public void addDoctor(Doctor doctor) {
         List<Dates> list = new ArrayList<>();
 
-        list.add(prepareOneDay(LocalDate.now()));
-        list.add(prepareOneDay(LocalDate.now().plusDays(1)));
-        list.add(prepareOneDay(LocalDate.now().plusDays(2)));
-        list.add(prepareOneDay(LocalDate.now().plusDays(3)));
-        list.add(prepareOneDay(LocalDate.now().plusDays(4)));
-        list.add(prepareOneDay(LocalDate.now().plusDays(5)));
-        list.add(prepareOneDay(LocalDate.now().plusDays(6)));
+        for (int i=1 ; i< 60; i++) {
+            list.add(prepareOneDay(LocalDate.now()));
+            list.add(prepareOneDay(LocalDate.now().plusDays(i)));
+        }
 
         doctor.setDays(list);
         doctorRepository.save(doctor);

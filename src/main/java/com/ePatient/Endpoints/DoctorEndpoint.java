@@ -22,30 +22,26 @@ public class DoctorEndpoint {
     }
 
     @PostMapping("doctor/add")
-    public ResponseEntity addDoctor(@RequestBody Doctor doctor)
-    {
+    public ResponseEntity addDoctor(@RequestBody Doctor doctor) {
         doctorService.addDoctor(doctor);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("doctor/delete/{id}")
-    public ResponseEntity deleteDoctor(@PathVariable int id)
-    {
+    public ResponseEntity deleteDoctor(@PathVariable int id) {
         doctorService.deleteDoctorById(id);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("doctor/{id}")
-    public ResponseEntity<Doctor> getDoctorById(@PathVariable int id)
-    {
+    public ResponseEntity<Doctor> getDoctorById(@PathVariable int id) {
         Doctor doctor = doctorService.getDoctorById(id);
         return new ResponseEntity<>(doctor, HttpStatus.OK);
     }
 
     @GetMapping("doctors")
-    public ResponseEntity<List<Doctor>> getAllDoctors()
-    {
+    public ResponseEntity<List<Doctor>> getAllDoctors() {
         List<Doctor> doctors = doctorService.getAllDoctors();
-        return new ResponseEntity<>(doctors,HttpStatus.OK);
+        return new ResponseEntity<>(doctors, HttpStatus.OK);
     }
 }

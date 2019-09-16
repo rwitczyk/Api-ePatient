@@ -35,6 +35,7 @@ public class Doctor {
     @NotBlank
     String phoneNumber;
 
-    @ElementCollection(targetClass=Dates.class)
+    @OneToMany(cascade = CascadeType.ALL)
+    @ElementCollection(targetClass = Dates.class)
     List<Dates> days;
 }

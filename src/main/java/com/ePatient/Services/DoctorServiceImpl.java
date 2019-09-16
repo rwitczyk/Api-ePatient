@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Service
 @Transactional
-public class DoctorServiceImpl implements DoctorService{
+public class DoctorServiceImpl implements DoctorService {
 
     private DoctorRepository doctorRepository;
 
@@ -29,8 +29,8 @@ public class DoctorServiceImpl implements DoctorService{
     public void addDoctor(Doctor doctor) {
         List<Dates> list = new ArrayList<>();
 
-        for (int i=1 ; i< 60; i++) {
-            list.add(prepareOneDay(LocalDate.now()));
+        list.add(prepareOneDay(LocalDate.now()));
+        for (int i = 1; i < 60; i++) {
             list.add(prepareOneDay(LocalDate.now().plusDays(i)));
         }
 
@@ -39,7 +39,7 @@ public class DoctorServiceImpl implements DoctorService{
     }
 
     private Dates prepareOneDay(LocalDate date) {
-        Map<String,Boolean> listOfHours = new HashMap<>();
+        Map<String, Boolean> listOfHours = new HashMap<>();
         listOfHours.put("8:00", false);
         listOfHours.put("8:30", false);
         listOfHours.put("9:00", false);
@@ -68,7 +68,7 @@ public class DoctorServiceImpl implements DoctorService{
     @Override
     public void deleteDoctorById(int doctorId) {
         Doctor doctor = getDoctorById(doctorId);
-        if(doctor != null) {
+        if (doctor != null) {
             doctorRepository.delete(doctor);
         }
         throw new DoctorNotFoundException("Podany doktor nie istnieje!");
@@ -77,7 +77,7 @@ public class DoctorServiceImpl implements DoctorService{
     @Override
     public Doctor getDoctorById(int doctorId) {
         Doctor doctor = doctorRepository.getDoctorByDoctorId(doctorId);
-        if(doctor != null) {
+        if (doctor != null) {
             return doctor;
         }
 

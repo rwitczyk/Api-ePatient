@@ -18,8 +18,8 @@ public class Dates {
     LocalDate date;
 
     @ElementCollection
-    @MapKeyColumn(name="hour")
-    @Column(name="isBusy")
-    @CollectionTable(name="listOfHours", joinColumns=@JoinColumn(name="id"))
+    @MapKeyColumn(name = "hour")
+    @Column(name = "isBusy")
+    @CollectionTable(name = "listOfHours", joinColumns = @JoinColumn(name = "id"))
     Map<String, Boolean> listOfHours;
 }

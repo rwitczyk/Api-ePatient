@@ -40,10 +40,10 @@ public class DoctorServiceImpl implements DoctorService {
 
     private Dates prepareOneDay(LocalDate date) {
         Map<String, Boolean> listOfHours = new HashMap<>();
-        listOfHours.put("8:00", false);
-        listOfHours.put("8:30", false);
-        listOfHours.put("9:00", false);
-        listOfHours.put("9:30", false);
+        listOfHours.put(" 8:00", false);
+        listOfHours.put(" 8:30", false);
+        listOfHours.put(" 9:00", false);
+        listOfHours.put(" 9:30", false);
         listOfHours.put("10:00", false);
         listOfHours.put("10:30", false);
         listOfHours.put("11:00", false);

@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,9 +17,7 @@ public class Dates {
 
     LocalDate date;
 
-    @ElementCollection
-    @MapKeyColumn(name = "hour")
-    @Column(name = "isBusy")
-    @CollectionTable(name = "listOfHours", joinColumns = @JoinColumn(name = "id"))
-    Map<String, Boolean> listOfHours;
+    @OneToMany(cascade = CascadeType.ALL)
+    @ElementCollection(targetClass = Hour.class)
+    List<Hour> listOfHours;
 }

@@ -2,6 +2,7 @@ package com.ePatient.Services;
 
 import com.ePatient.Entities.Dates;
 import com.ePatient.Entities.Doctor;
+import com.ePatient.Entities.Hour;
 import com.ePatient.Exceptions.DoctorNotFoundException;
 import com.ePatient.Repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -39,25 +38,25 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     private Dates prepareOneDay(LocalDate date) {
-        Map<String, Boolean> listOfHours = new HashMap<>();
-        listOfHours.put(" 8:00", false);
-        listOfHours.put(" 8:30", false);
-        listOfHours.put(" 9:00", false);
-        listOfHours.put(" 9:30", false);
-        listOfHours.put("10:00", false);
-        listOfHours.put("10:30", false);
-        listOfHours.put("11:00", false);
-        listOfHours.put("11:30", false);
-        listOfHours.put("12:00", false);
-        listOfHours.put("12:30", false);
-        listOfHours.put("13:00", false);
-        listOfHours.put("13:30", false);
-        listOfHours.put("14:00", false);
-        listOfHours.put("14:30", false);
-        listOfHours.put("15:00", false);
-        listOfHours.put("15:30", false);
-        listOfHours.put("16:00", false);
-        listOfHours.put("16:30", false);
+        List<Hour> listOfHours = new ArrayList<>();
+        listOfHours.add(new Hour(" 8:00", "false"));
+        listOfHours.add(new Hour(" 8:30", "false"));
+        listOfHours.add(new Hour(" 9:00", "false"));
+        listOfHours.add(new Hour(" 9:30", "false"));
+        listOfHours.add(new Hour("10:00", "false"));
+        listOfHours.add(new Hour("10:30", "false"));
+        listOfHours.add(new Hour("11:00", "false"));
+        listOfHours.add(new Hour("11:30", "false"));
+        listOfHours.add(new Hour("12:00", "false"));
+        listOfHours.add(new Hour("12:30", "false"));
+        listOfHours.add(new Hour("13:00", "false"));
+        listOfHours.add(new Hour("13:30", "false"));
+        listOfHours.add(new Hour("14:00", "false"));
+        listOfHours.add(new Hour("14:30", "false"));
+        listOfHours.add(new Hour("15:00", "false"));
+        listOfHours.add(new Hour("15:30", "false"));
+        listOfHours.add(new Hour("16:00", "false"));
+        listOfHours.add(new Hour("16:30", "false"));
 
         Dates dates = new Dates();
         dates.setDate(date);

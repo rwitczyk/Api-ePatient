@@ -15,6 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class Patient {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int patientId;
@@ -40,8 +41,4 @@ public class Patient {
     String phoneNumber;
 
     int doctorId;
-
-    public String getSurname() {
-        return surname;
-    }
 }

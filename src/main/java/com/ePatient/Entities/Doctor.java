@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class Doctor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int doctorId;

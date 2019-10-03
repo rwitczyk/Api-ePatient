@@ -1,6 +1,6 @@
 package com.ePatient.Endpoints;
 
-import com.ePatient.Entities.Patient;
+import com.ePatient.Entities.PatientEntity;
 import com.ePatient.Services.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,16 +22,16 @@ public class PatientEndpoint {
     }
 
     @PostMapping("patient/add")
-    public ResponseEntity addPatientAccount(@RequestBody Patient patient) {
-        patientService.addPatient(patient);
-        return new ResponseEntity<>(patient, HttpStatus.OK);
+    public ResponseEntity addPatientAccount(@RequestBody PatientEntity patientEntity) {
+        patientService.addPatient(patientEntity);
+        return new ResponseEntity<>(patientEntity, HttpStatus.OK);
     }
 
     @GetMapping("patient/id/{id}")
-    public ResponseEntity<Patient> getPatientById(@PathVariable int id)
+    public ResponseEntity<PatientEntity> getPatientById(@PathVariable int id)
     {
-        Patient patient = patientService.getPatientById(id);
-        return new ResponseEntity<>(patient, HttpStatus.OK);
+        PatientEntity patientEntity = patientService.getPatientById(id);
+        return new ResponseEntity<>(patientEntity, HttpStatus.OK);
     }
 
     @GetMapping("patient/delete/{id}")
@@ -42,23 +42,23 @@ public class PatientEndpoint {
     }
 
     @GetMapping("patients/")
-    public ResponseEntity<Iterable<Patient>> getAllPatients()
+    public ResponseEntity<Iterable<PatientEntity>> getAllPatients()
     {
-        Iterable<Patient> patients = patientService.getAllPatients();
+        Iterable<PatientEntity> patients = patientService.getAllPatients();
         return new ResponseEntity<>(patients,HttpStatus.OK);
     }
 
     @GetMapping("patient/pesel/{peselNumber}")
-    public ResponseEntity<Patient> getPatientByPeselNumber(@PathVariable String peselNumber)
+    public ResponseEntity<PatientEntity> getPatientByPeselNumber(@PathVariable String peselNumber)
     {
-        Patient patient = patientService.getPatientByPesel(peselNumber);
-        return new ResponseEntity<>(patient,HttpStatus.OK);
+        PatientEntity patientEntity = patientService.getPatientByPesel(peselNumber);
+        return new ResponseEntity<>(patientEntity,HttpStatus.OK);
     }
 
     @GetMapping("patient/doctorid/{id}")
-    public ResponseEntity<List<Patient>> getPatientsByDoctorId(@PathVariable int id)
+    public ResponseEntity<List<PatientEntity>> getPatientsByDoctorId(@PathVariable int id)
     {
-        List<Patient> patients = patientService.getPatientsByDoctorId(id);
-        return new ResponseEntity<>(patients,HttpStatus.OK);
+        List<PatientEntity> patientEntities = patientService.getPatientsByDoctorId(id);
+        return new ResponseEntity<>(patientEntities,HttpStatus.OK);
     }
 }

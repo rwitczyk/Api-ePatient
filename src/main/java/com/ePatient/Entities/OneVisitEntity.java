@@ -7,22 +7,28 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalTime;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class Hour {
+public class OneVisitEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int hourId;
+    int visitId;
 
-    String time;
+    LocalTime fromTime;
+
+    LocalTime toTime;
 
     String isBusy;
 
-    public Hour(String time, String isBusy) {
-        this.time = time;
+    String additionalDescription;
+
+    public OneVisitEntity(LocalTime fromTime, LocalTime toTime, String isBusy) {
+        this.fromTime = fromTime;
+        this.toTime = toTime;
         this.isBusy = isBusy;
     }
 }

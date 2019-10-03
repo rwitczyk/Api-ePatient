@@ -5,19 +5,24 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class Dates {
+public class DatesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int dateId;
 
     LocalDate date;
 
+    LocalTime visitsFromTime;
+
+    LocalTime visitsToTime;
+
     @OneToMany(cascade = CascadeType.ALL)
-    @ElementCollection(targetClass = Hour.class)
-    List<Hour> listOfHours;
+    @ElementCollection(targetClass = OneVisitEntity.class)
+    List<OneVisitEntity> listOfOneVisitEntities;
 }

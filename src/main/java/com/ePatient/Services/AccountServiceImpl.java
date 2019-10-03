@@ -1,7 +1,7 @@
 package com.ePatient.Services;
 
-import com.ePatient.Entities.Doctor;
-import com.ePatient.Entities.Patient;
+import com.ePatient.Entities.DoctorEntity;
+import com.ePatient.Entities.PatientEntity;
 import com.ePatient.Repository.DoctorRepository;
 import com.ePatient.Repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +29,14 @@ public class AccountServiceImpl implements AccountService {
     public void sendEmail(String email) {
         String passwordAccount = "";
 
-        Patient patient = patientRepository.getPatientByEmail(email);
-        if (patient == null) {
-            Doctor doctor = doctorRepository.getDoctorByEmail(email);
-            if (doctor != null) {
-                passwordAccount = doctor.getPassword();
+        PatientEntity patientEntity = patientRepository.getPatientByEmail(email);
+        if (patientEntity == null) {
+            DoctorEntity doctorEntity = doctorRepository.getDoctorByEmail(email);
+            if (doctorEntity != null) {
+                passwordAccount = doctorEntity.getPassword();
             }
         } else {
-            passwordAccount = patient.getPassword();
+            passwordAccount = patientEntity.getPassword();
         }
 
         SimpleMailMessage msg = new SimpleMailMessage();

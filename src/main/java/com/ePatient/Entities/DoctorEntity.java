@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class Doctor {
+public class DoctorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +37,6 @@ public class Doctor {
     String phoneNumber;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @ElementCollection(targetClass = Dates.class)
-    List<Dates> days;
+    @ElementCollection(targetClass = DatesEntity.class)
+    List<DatesEntity> days;
 }

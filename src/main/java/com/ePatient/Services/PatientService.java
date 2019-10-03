@@ -1,14 +1,14 @@
 package com.ePatient.Services;
 
-import com.ePatient.Entities.Patient;
+import com.ePatient.Entities.PatientEntity;
 
 import java.util.List;
 
 public interface PatientService {
-    boolean addPatient(Patient patient);
+    boolean addPatient(PatientEntity patientEntity);
     void deletePatient(int id);
-    Patient getPatientById(int id);
-    Patient getPatientByPesel(String name);
-    Iterable<Patient> getAllPatients();
-    List<Patient> getPatientsByDoctorId(int id);
+    PatientEntity getPatientById(int id);
+    PatientEntity getPatientByPesel(String name);
+    Iterable<PatientEntity> getAllPatients();
+    List<PatientEntity> getPatientsByDoctorId(int id);
 }

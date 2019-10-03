@@ -1,14 +1,14 @@
 package com.ePatient.Repository;
 
-import com.ePatient.Entities.Doctor;
+import com.ePatient.Entities.DoctorEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Repository
-public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
-    Doctor getDoctorByDoctorId(int id);
-    Doctor getDoctorsByDays(Date date);
-    Doctor getDoctorByEmail(String email);
+public interface DoctorRepository extends JpaRepository<DoctorEntity, Integer> {
+    DoctorEntity getDoctorByDoctorId(int id);
+    DoctorEntity getDoctorsByDays(LocalDate date);
+    DoctorEntity getDoctorByEmail(String email);
 }

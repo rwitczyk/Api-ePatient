@@ -1,5 +1,6 @@
 package com.ePatient.Services;
 
+import com.ePatient.Entities.BookAVisitModel;
 import com.ePatient.Entities.DatesEntity;
 import com.ePatient.Entities.DoctorEntity;
 import com.ePatient.Entities.OneVisitEntity;
@@ -76,7 +77,8 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     private DatesEntity prepareOneDay(LocalDate date, LocalTime fromTime, LocalTime toTime, int minutesInterval) {
-        List<OneVisitEntity> listOfOneVisitEntities = new ArrayList<>();
+        DatesEntity datesEntity = new DatesEntity();
+        List<OneVisitEntity> listOfOneVisitEntities = datesEntity.getListOfOneVisitEntities();
         LocalTime actualTime = fromTime;
 
         while (actualTime.isBefore(toTime)) {
@@ -84,7 +86,6 @@ public class DoctorServiceImpl implements DoctorService {
             actualTime = actualTime.plusMinutes(minutesInterval);
         }
 
-        DatesEntity datesEntity = new DatesEntity();
         datesEntity.setVisitsFromTime(fromTime);
         datesEntity.setVisitsToTime(toTime);
         datesEntity.setDate(date);
@@ -107,12 +108,24 @@ public class DoctorServiceImpl implements DoctorService {
         if (doctorEntity != null) {
             return doctorEntity;
         }
-
         throw new DoctorNotFoundException("Podany doktor nie istnieje");
     }
 
     @Override
     public List<DoctorEntity> getAllDoctors() {
         return doctorRepository.findAll();
+    }
+
+    @Override
+    public void questionAboutBookAVisit(BookAVisitModel bookAVisitModel) {
+        DoctorEntity doctor = doctorRepository.getDoctorByDoctorId(bookAVisitModel.getDoctorId());
+
+        List<DatesEntity> listDoctorDates = doctor.getDays();
+        for (DatesEntity oneDate : listDoctorDates) {
+            if (oneDate.getDate().equals(bookAVisitModel.getVisitDate())) {
+                List<BookAVisitModel> listOfVisitsToApprove = oneDate.getListOfVisitToApprove();
+                listOfVisitsToApprove.add(bookAVisitModel);
+            }
+        }
     }
 }

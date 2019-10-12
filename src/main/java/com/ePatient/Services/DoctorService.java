@@ -1,5 +1,6 @@
 package com.ePatient.Services;
 
+import com.ePatient.Entities.BookAVisitModel;
 import com.ePatient.Entities.DoctorEntity;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
@@ -14,4 +15,5 @@ public interface DoctorService {
     void deleteDoctorById(int id);
     DoctorEntity getDoctorById(int id);
     List<DoctorEntity> getAllDoctors();
+    void questionAboutBookAVisit(BookAVisitModel bookAVisitModel);
 }

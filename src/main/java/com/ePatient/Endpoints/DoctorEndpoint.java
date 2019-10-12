@@ -1,5 +1,6 @@
 package com.ePatient.Endpoints;
 
+import com.ePatient.Entities.BookAVisitModel;
 import com.ePatient.Entities.DoctorEntity;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
@@ -38,6 +39,12 @@ public class DoctorEndpoint {
     @PostMapping("doctor/create-auto-timetable-for-doctor")
     public ResponseEntity createAutoTimetableForDoctor(@RequestBody DoctorTimetableModel doctorTimetableModel) {
         doctorService.createAutoTimetableForDoctor(doctorTimetableModel);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("doctor/question-about-book-a-visit")
+    public ResponseEntity questionAboutBookAVisit(@RequestBody BookAVisitModel bookAVisitModel){
+        doctorService.questionAboutBookAVisit(bookAVisitModel);
         return new ResponseEntity(HttpStatus.OK);
     }
 

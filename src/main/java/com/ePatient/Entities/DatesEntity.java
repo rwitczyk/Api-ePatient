@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,5 +25,9 @@ public class DatesEntity {
 
     @OneToMany(cascade = CascadeType.ALL)
     @ElementCollection(targetClass = OneVisitEntity.class)
-    List<OneVisitEntity> listOfOneVisitEntities;
+    List<OneVisitEntity> listOfOneVisitEntities = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @ElementCollection(targetClass = BookAVisitModel.class)
+    List<BookAVisitModel> listOfVisitToApprove = new ArrayList<>();
 }

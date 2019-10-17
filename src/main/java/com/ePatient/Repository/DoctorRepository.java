@@ -11,4 +11,5 @@ public interface DoctorRepository extends JpaRepository<DoctorEntity, Integer> {
     DoctorEntity getDoctorByDoctorId(int id);
     DoctorEntity getDoctorsByDays(LocalDate date);
     DoctorEntity getDoctorByEmail(String email);
+    boolean existsByEmail(String email);
 }

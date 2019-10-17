@@ -1,9 +1,11 @@
 package com.ePatient.Services;
 
 import com.ePatient.Entities.PatientEntity;
+import com.ePatient.Exceptions.AccountAlreadyExistsException;
 import com.ePatient.Exceptions.PatientNotFoundException;
 import com.ePatient.Repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,15 +17,23 @@ public class PatientServiceImpl implements PatientService {
 
     private PatientRepository patientRepository;
 
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
-    public PatientServiceImpl(PatientRepository patientRepository) {
+    public PatientServiceImpl(PatientRepository patientRepository, PasswordEncoder passwordEncoder) {
         this.patientRepository = patientRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public boolean addPatient(PatientEntity patientEntity) {
-        patientRepository.save(patientEntity);
-        return true;
+    public void addPatient(PatientEntity patientEntity) {
+        if(!patientRepository.existsByEmail(patientEntity.getEmail())) {
+            patientEntity.setPassword(passwordEncoder.encode(patientEntity.getPassword()));
+            patientRepository.save(patientEntity);
+        }
+        else{
+            throw new AccountAlreadyExistsException("Konto o takim adresie email już istnieje!");
+        }
     }
 
     @Override

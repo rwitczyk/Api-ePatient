@@ -12,10 +12,4 @@ public class OneVisitModel {
     private LocalTime visitFromTime;
     private LocalTime visitToTime;
 
-    public OneVisitModel(int doctorId, LocalDate visitDate, LocalTime visitFromTime, LocalTime visitToTime) {
-        this.doctorId = doctorId;
-        this.visitDate = visitDate;
-        this.visitFromTime = visitFromTime;
-        this.visitToTime = visitToTime;
-    }
 }

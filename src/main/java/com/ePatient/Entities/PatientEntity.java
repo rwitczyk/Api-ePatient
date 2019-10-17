@@ -1,5 +1,6 @@
 package com.ePatient.Entities;
 
+import com.ePatient.Models.Role;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -39,6 +40,8 @@ public class PatientEntity {
 
     @NotBlank
     String phoneNumber;
+
+    Role role = Role.ROLE_PATIENT;
 
     int doctorId;
 }

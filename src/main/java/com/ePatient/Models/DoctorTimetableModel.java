@@ -12,12 +12,4 @@ public class DoctorTimetableModel {
     private LocalDate timetableDate;
     private LocalTime fromTime;
     private LocalTime toTime;
-
-    public DoctorTimetableModel(int doctorId, int minutes, LocalDate timetableDate, LocalTime fromTime, LocalTime toTime) {
-        this.doctorId = doctorId;
-        this.minutes = minutes;
-        this.timetableDate = timetableDate;
-        this.fromTime = fromTime;
-        this.toTime = toTime;
-    }
 }

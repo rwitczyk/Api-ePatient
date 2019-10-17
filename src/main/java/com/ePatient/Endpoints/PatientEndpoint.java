@@ -24,7 +24,7 @@ public class PatientEndpoint {
     @PostMapping("patient/add")
     public ResponseEntity addPatientAccount(@RequestBody PatientEntity patientEntity) {
         patientService.addPatient(patientEntity);
-        return new ResponseEntity<>(patientEntity, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("patient/id/{id}")

@@ -1,11 +1,13 @@
 package com.ePatient.Entities;
 
+import com.ePatient.Models.Role;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,7 +38,9 @@ public class DoctorEntity {
     @NotBlank
     String phoneNumber;
 
+    Role role = Role.ROLE_DOCTOR;
+
     @OneToMany(cascade = CascadeType.ALL)
     @ElementCollection(targetClass = DatesEntity.class)
-    List<DatesEntity> days;
+    List<DatesEntity> days = new ArrayList<>();
 }

@@ -4,17 +4,18 @@ import com.ePatient.Entities.BookAVisitModel;
 import com.ePatient.Entities.DatesEntity;
 import com.ePatient.Entities.DoctorEntity;
 import com.ePatient.Entities.OneVisitEntity;
+import com.ePatient.Exceptions.AccountAlreadyExistsException;
 import com.ePatient.Exceptions.DoctorNotFoundException;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 import com.ePatient.Repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,16 +24,22 @@ public class DoctorServiceImpl implements DoctorService {
 
     private DoctorRepository doctorRepository;
 
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
-    public DoctorServiceImpl(DoctorRepository doctorRepository) {
+    public DoctorServiceImpl(DoctorRepository doctorRepository, PasswordEncoder passwordEncoder) {
         this.doctorRepository = doctorRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void addDoctor(DoctorEntity doctorEntity) {
-        List<DatesEntity> list = new ArrayList<>();
-        doctorEntity.setDays(list);
-        doctorRepository.save(doctorEntity);
+        if (doctorRepository.existsByEmail(doctorEntity.getEmail())) {
+            doctorEntity.setPassword(passwordEncoder.encode(doctorEntity.getPassword()));
+            doctorRepository.save(doctorEntity);
+        } else {
+            throw new AccountAlreadyExistsException("Konto o takim adresie email już istnieje!");
+        }
     }
 
     @Override

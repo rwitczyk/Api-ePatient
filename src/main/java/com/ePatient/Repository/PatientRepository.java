@@ -12,4 +12,5 @@ public interface PatientRepository extends JpaRepository<PatientEntity,Integer> 
     PatientEntity getPatientByPesel(String pesel);
     List<PatientEntity> getPatientsByDoctorId(int id);
     PatientEntity getPatientByEmail(String email);
+    boolean existsByEmail(String email);
 }

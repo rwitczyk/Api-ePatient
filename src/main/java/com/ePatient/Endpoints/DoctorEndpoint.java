@@ -43,7 +43,7 @@ public class DoctorEndpoint {
     }
 
     @PostMapping("doctor/question-about-book-a-visit")
-    public ResponseEntity questionAboutBookAVisit(@RequestBody BookAVisitModel bookAVisitModel){
+    public ResponseEntity questionAboutBookAVisit(@RequestBody BookAVisitModel bookAVisitModel) {
         doctorService.questionAboutBookAVisit(bookAVisitModel);
         return new ResponseEntity(HttpStatus.OK);
     }

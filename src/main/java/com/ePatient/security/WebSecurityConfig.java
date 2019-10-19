@@ -36,8 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Entry points
         http.authorizeRequests()//
-                .antMatchers("/api/login").permitAll()
-                .antMatchers("/api/patient/add").permitAll()
+                .antMatchers("/api/**").permitAll()
                 // Disallow everything else..
                 .anyRequest().authenticated();
 
@@ -46,22 +45,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Apply JWT
         http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
-
-        // Optional, if you want to test the API from a browser
-        // http.httpBasic();
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        // Allow swagger to be accessed without authentication
-        web.ignoring().antMatchers("/v2/api-docs")//
-                .antMatchers("/swagger-resources/**")//
-                .antMatchers("/swagger-ui.html")//
-                .antMatchers("/configuration/**")//
-                .antMatchers("api/login")
-                .antMatchers("api/patient/add")
-                .antMatchers("/webjars/**")//
-                .antMatchers("/public");
+        // Allow endpoints to be accessed without authentication
+        web.ignoring()
+                .antMatchers("/api/login")
+                .antMatchers("/api/patient/add")
+                .antMatchers("/api/account/email");
     }
 
     @Bean

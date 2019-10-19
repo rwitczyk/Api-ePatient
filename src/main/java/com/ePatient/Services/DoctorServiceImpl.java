@@ -34,7 +34,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public void addDoctor(DoctorEntity doctorEntity) {
-        if (doctorRepository.existsByEmail(doctorEntity.getEmail())) {
+        if (!doctorRepository.existsByEmail(doctorEntity.getEmail())) {
             doctorEntity.setPassword(passwordEncoder.encode(doctorEntity.getPassword()));
             doctorRepository.save(doctorEntity);
         } else {

@@ -5,6 +5,7 @@ import com.ePatient.Services.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class PatientEndpoint {
         return new ResponseEntity<>(patientEntity, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_PATIENT')")
     @GetMapping("patient/delete/{id}")
     public ResponseEntity deletePatientById(@PathVariable int id)
     {

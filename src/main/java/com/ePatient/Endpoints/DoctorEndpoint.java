@@ -8,6 +8,7 @@ import com.ePatient.Services.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class DoctorEndpoint {
         this.doctorService = doctorService;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("doctor/add")
     public ResponseEntity addDoctor(@RequestBody DoctorEntity doctorEntity) {
         doctorService.addDoctor(doctorEntity);
@@ -36,6 +38,7 @@ public class DoctorEndpoint {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("doctor/create-auto-timetable-for-doctor")
     public ResponseEntity createAutoTimetableForDoctor(@RequestBody DoctorTimetableModel doctorTimetableModel) {
         doctorService.createAutoTimetableForDoctor(doctorTimetableModel);
@@ -48,12 +51,14 @@ public class DoctorEndpoint {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("doctor/create-empty-timetable-for-doctor")
     public ResponseEntity createEmptyTimetableForDoctor(@RequestBody DoctorTimetableModel doctorTimetableModel) {
         doctorService.createEmptyTimetableForDoctor(doctorTimetableModel);
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("doctor/delete/{id}")
     public ResponseEntity deleteDoctor(@PathVariable int id) {
         doctorService.deleteDoctorById(id);

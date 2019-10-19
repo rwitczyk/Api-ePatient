@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -35,7 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         // Entry points
-        http.authorizeRequests()//
+        http.authorizeRequests()
                 .antMatchers("/api/**").permitAll()
                 // Disallow everything else..
                 .anyRequest().authenticated();
@@ -45,15 +44,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Apply JWT
         http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
-    }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        // Allow endpoints to be accessed without authentication
-        web.ignoring()
-                .antMatchers("/api/login")
-                .antMatchers("/api/patient/add")
-                .antMatchers("/api/account/email");
     }
 
     @Bean

@@ -105,8 +105,9 @@ public class DoctorServiceImpl implements DoctorService {
         DoctorEntity doctorEntity = getDoctorById(doctorId);
         if (doctorEntity != null) {
             doctorRepository.delete(doctorEntity);
+        }else {
+            throw new DoctorNotFoundException("Podany doktor nie istnieje!");
         }
-        throw new DoctorNotFoundException("Podany doktor nie istnieje!");
     }
 
     @Override

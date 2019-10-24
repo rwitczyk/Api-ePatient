@@ -43,7 +43,7 @@ public class PatientEndpoint {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("patients/")
+    @GetMapping("patients")
     public ResponseEntity<Iterable<PatientEntity>> getAllPatients()
     {
         Iterable<PatientEntity> patients = patientService.getAllPatients();

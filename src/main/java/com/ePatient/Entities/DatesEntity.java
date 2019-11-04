@@ -24,10 +24,12 @@ public class DatesEntity {
     LocalTime visitsToTime;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @ElementCollection(targetClass = OneVisitEntity.class)
     List<OneVisitEntity> listOfOneVisitEntities = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
-    @ElementCollection(targetClass = BookAVisitModel.class)
-    List<BookAVisitModel> listOfVisitToApprove = new ArrayList<>();
+    List<BookAVisitModel> listOfVisitsToApprove = new ArrayList<>();
+
+    public DatesEntity(LocalDate date) {
+        this.date = date;
+    }
 }

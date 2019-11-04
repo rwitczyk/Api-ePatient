@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,6 +36,12 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public void addDoctor(DoctorEntity doctorEntity) {
         if (!doctorRepository.existsByEmail(doctorEntity.getEmail())) {
+
+            List<DatesEntity> emptyDates = new ArrayList<>();
+            for (int i = 0; i < 90; i++) {
+                emptyDates.add(new DatesEntity(LocalDate.now().plusDays(i)));
+            }
+            doctorEntity.setDays(emptyDates);
             doctorEntity.setPassword(passwordEncoder.encode(doctorEntity.getPassword()));
             doctorRepository.save(doctorEntity);
         } else {
@@ -47,9 +54,16 @@ public class DoctorServiceImpl implements DoctorService {
         DoctorEntity doctorEntity = doctorRepository.getDoctorByDoctorId(doctorTimetableModel.getDoctorId());
 
         List<DatesEntity> list = doctorEntity.getDays();
-        list.add(prepareOneDay(doctorTimetableModel.getTimetableDate(), doctorTimetableModel.getFromTime(),
-                doctorTimetableModel.getToTime(), doctorTimetableModel.getMinutes()));
-        doctorEntity.setDays(list);
+        if (list != null) { //jezeli nie zainicjalizowalismy listy wczesniej
+            list.add(prepareAllVisitsForOneDay(doctorTimetableModel.getTimetableDate(), doctorTimetableModel.getFromTime(),
+                    doctorTimetableModel.getToTime(), doctorTimetableModel.getMinutes()));
+            doctorEntity.setDays(list);
+        } else {
+            List<DatesEntity> createdList = new ArrayList<>();
+            createdList.add(prepareAllVisitsForOneDay(doctorTimetableModel.getTimetableDate(), doctorTimetableModel.getFromTime(),
+                    doctorTimetableModel.getToTime(), doctorTimetableModel.getMinutes()));
+            doctorEntity.setDays(createdList);
+        }
 
         doctorRepository.save(doctorEntity);
     }
@@ -83,7 +97,7 @@ public class DoctorServiceImpl implements DoctorService {
         }
     }
 
-    private DatesEntity prepareOneDay(LocalDate date, LocalTime fromTime, LocalTime toTime, int minutesInterval) {
+    private DatesEntity prepareAllVisitsForOneDay(LocalDate date, LocalTime fromTime, LocalTime toTime, int minutesInterval) {
         DatesEntity datesEntity = new DatesEntity();
         List<OneVisitEntity> listOfOneVisitEntities = datesEntity.getListOfOneVisitEntities();
         LocalTime actualTime = fromTime;
@@ -105,7 +119,7 @@ public class DoctorServiceImpl implements DoctorService {
         DoctorEntity doctorEntity = getDoctorById(doctorId);
         if (doctorEntity != null) {
             doctorRepository.delete(doctorEntity);
-        }else {
+        } else {
             throw new DoctorNotFoundException("Podany doktor nie istnieje!");
         }
     }
@@ -125,14 +139,16 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public void questionAboutBookAVisit(BookAVisitModel bookAVisitModel) {
+    public void createQuestionAboutBookAVisit(BookAVisitModel bookAVisitModel) {
         DoctorEntity doctor = doctorRepository.getDoctorByDoctorId(bookAVisitModel.getDoctorId());
 
         List<DatesEntity> listDoctorDates = doctor.getDays();
         for (DatesEntity oneDate : listDoctorDates) {
             if (oneDate.getDate().equals(bookAVisitModel.getVisitDate())) {
-                List<BookAVisitModel> listOfVisitsToApprove = oneDate.getListOfVisitToApprove();
+                List<BookAVisitModel> listOfVisitsToApprove = oneDate.getListOfVisitsToApprove();
                 listOfVisitsToApprove.add(bookAVisitModel);
+
+                return;
             }
         }
     }

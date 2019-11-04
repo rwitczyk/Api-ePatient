@@ -15,5 +15,5 @@ public interface DoctorService {
     void deleteDoctorById(int id);
     DoctorEntity getDoctorById(int id);
     List<DoctorEntity> getAllDoctors();
-    void questionAboutBookAVisit(BookAVisitModel bookAVisitModel);
+    void createQuestionAboutBookAVisit(BookAVisitModel bookAVisitModel);
 }

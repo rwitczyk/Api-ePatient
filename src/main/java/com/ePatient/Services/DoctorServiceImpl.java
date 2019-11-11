@@ -8,7 +8,10 @@ import com.ePatient.Exceptions.AccountAlreadyExistsException;
 import com.ePatient.Exceptions.DoctorNotFoundException;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
+import com.ePatient.Repository.BookAVisitRepository;
 import com.ePatient.Repository.DoctorRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,10 +30,15 @@ public class DoctorServiceImpl implements DoctorService {
 
     private PasswordEncoder passwordEncoder;
 
+    private BookAVisitRepository bookAVisitRepository;
+
+    private static Logger logger = LoggerFactory.getLogger(DoctorServiceImpl.class);
+
     @Autowired
-    public DoctorServiceImpl(DoctorRepository doctorRepository, PasswordEncoder passwordEncoder) {
+    public DoctorServiceImpl(DoctorRepository doctorRepository, PasswordEncoder passwordEncoder, BookAVisitRepository bookAVisitRepository) {
         this.doctorRepository = doctorRepository;
         this.passwordEncoder = passwordEncoder;
+        this.bookAVisitRepository = bookAVisitRepository;
     }
 
     @Override
@@ -54,7 +62,7 @@ public class DoctorServiceImpl implements DoctorService {
         DoctorEntity doctorEntity = doctorRepository.getDoctorByDoctorId(doctorTimetableModel.getDoctorId());
 
         List<DatesEntity> list = doctorEntity.getDays();
-        if (list != null) { //jezeli nie zainicjalizowalismy listy wczesniej
+        if (list != null) { // jezeli nie zainicjalizowalismy listy wczesniej
             list.add(prepareAllVisitsForOneDay(doctorTimetableModel.getTimetableDate(), doctorTimetableModel.getFromTime(),
                     doctorTimetableModel.getToTime(), doctorTimetableModel.getMinutes()));
             doctorEntity.setDays(list);
@@ -85,14 +93,14 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public void createOneVisit(OneVisitModel oneVisitModel) {
+    public void createOneVisit(OneVisitEntity oneVisitModel) {
         DoctorEntity doctorEntity = doctorRepository.getDoctorByDoctorId(oneVisitModel.getDoctorId());
 
         List<DatesEntity> listDoctorDates = doctorEntity.getDays();
         for (DatesEntity oneDate : listDoctorDates) {
             if (oneDate.getDate().equals(oneVisitModel.getVisitDate())) {
                 List<OneVisitEntity> listOfOneVisitEntities = oneDate.getListOfOneVisitEntities();
-                listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getVisitFromTime(), oneVisitModel.getVisitToTime(), "false"));
+                listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getFromTime(), oneVisitModel.getToTime(), "false"));
             }
         }
     }
@@ -146,10 +154,53 @@ public class DoctorServiceImpl implements DoctorService {
         for (DatesEntity oneDate : listDoctorDates) {
             if (oneDate.getDate().equals(bookAVisitModel.getVisitDate())) {
                 List<BookAVisitModel> listOfVisitsToApprove = oneDate.getListOfVisitsToApprove();
+                bookAVisitModel.setVisitDate(bookAVisitModel.getVisitDate().plusDays(1)); // bo sie dodawal dzien poprzedni :(
                 listOfVisitsToApprove.add(bookAVisitModel);
 
                 return;
             }
         }
     }
+
+    @Override
+    public BookAVisitModel getBookAVisitModelById(int id) {
+        BookAVisitModel bookAVisitModel = this.bookAVisitRepository.getBookAVisitModelByVisitId(id);
+        if (bookAVisitModel == null) {
+            throw new DoctorNotFoundException("Nie znaleziono wizyty o id: " + id);
+        }
+
+        return bookAVisitModel;
+    }
+
+    @Override
+    public void approveBookAVisit(OneVisitModel oneVisitModel) {
+        DoctorEntity doctor = doctorRepository.getDoctorByDoctorId(oneVisitModel.getDoctorId());
+        OneVisitEntity oneVisitEntity = parseOneVisitModelToEntity(oneVisitModel);
+        oneVisitEntity.setVisitDate(oneVisitEntity.getVisitDate().plusDays(1));
+        List<DatesEntity> listDoctorDates = doctor.getDays();
+        for (DatesEntity oneDate : listDoctorDates) {
+            if (oneDate.getDate().equals(oneVisitEntity.getVisitDate())) {
+                List<OneVisitEntity> doctorVisits = oneDate.getListOfOneVisitEntities();
+                doctorVisits.add(oneVisitEntity);
+
+                this.bookAVisitRepository.deleteByVisitId(oneVisitModel.getBookAVisitModelId());
+                logger.info("Usuwam zapytanie o wizytę o id:" + oneVisitModel.getBookAVisitModelId() + " doktora o id:" + oneVisitModel.getDoctorId() + ", godzina: " + LocalTime.now());
+                return;
+            }
+        }
+    }
+
+    private OneVisitEntity parseOneVisitModelToEntity(OneVisitModel oneVisitModel) {
+
+        return OneVisitEntity.builder()
+                .doctorId(oneVisitModel.getDoctorId())
+                .isBusy(oneVisitModel.getIsBusy())
+                .additionalDescription(oneVisitModel.getAdditionalDescription())
+                .visitDate(oneVisitModel.getVisitDate())
+                .fromTime(LocalTime.of(oneVisitModel.getFromTime().getHour(), oneVisitModel.getFromTime().getMinute()))
+                .toTime(LocalTime.of(oneVisitModel.getToTime().getHour(), oneVisitModel.getToTime().getMinute()))
+                .build();
+    }
+
+
 }

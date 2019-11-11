@@ -10,7 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -33,7 +33,7 @@ public class PatientEntity {
     @NotBlank
     String password;
 
-    Date dateOfBirth;
+    LocalDate dateOfBirth;
 
     @NotBlank
     String pesel;

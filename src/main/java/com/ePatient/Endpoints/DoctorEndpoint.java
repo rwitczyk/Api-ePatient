@@ -2,6 +2,7 @@ package com.ePatient.Endpoints;
 
 import com.ePatient.Entities.BookAVisitModel;
 import com.ePatient.Entities.DoctorEntity;
+import com.ePatient.Entities.OneVisitEntity;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 import com.ePatient.Services.DoctorService;
@@ -33,7 +34,7 @@ public class DoctorEndpoint {
     }
 
     @PostMapping("doctor/create-one-visit")
-    public ResponseEntity createOneVisit(@RequestBody OneVisitModel oneVisitModel) {
+    public ResponseEntity createOneVisit(@RequestBody OneVisitEntity oneVisitModel) {
         doctorService.createOneVisit(oneVisitModel);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -75,5 +76,16 @@ public class DoctorEndpoint {
     public ResponseEntity<List<DoctorEntity>> getAllDoctors() {
         List<DoctorEntity> doctorEntities = doctorService.getAllDoctors();
         return new ResponseEntity<>(doctorEntities, HttpStatus.OK);
+    }
+
+    @GetMapping("visit/{id}")
+    public ResponseEntity<BookAVisitModel> getBookAVisitModelByVisitId(@PathVariable int id) {
+        return new ResponseEntity<>(doctorService.getBookAVisitModelById(id), HttpStatus.OK);
+    }
+
+    @PostMapping("visit/approve")
+    public ResponseEntity approveBookAVisit(@RequestBody OneVisitModel oneVisitModel) {
+        doctorService.approveBookAVisit(oneVisitModel);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

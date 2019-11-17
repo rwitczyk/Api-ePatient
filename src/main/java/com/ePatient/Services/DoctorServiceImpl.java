@@ -176,16 +176,35 @@ public class DoctorServiceImpl implements DoctorService {
     public void approveBookAVisit(OneVisitModel oneVisitModel) {
         DoctorEntity doctor = doctorRepository.getDoctorByDoctorId(oneVisitModel.getDoctorId());
         OneVisitEntity oneVisitEntity = parseOneVisitModelToEntity(oneVisitModel);
-        oneVisitEntity.setVisitDate(oneVisitEntity.getVisitDate().plusDays(1));
+        oneVisitEntity.setVisitDate(oneVisitEntity.getVisitDate());
         List<DatesEntity> listDoctorDates = doctor.getDays();
         for (DatesEntity oneDate : listDoctorDates) {
             if (oneDate.getDate().equals(oneVisitEntity.getVisitDate())) {
                 List<OneVisitEntity> doctorVisits = oneDate.getListOfOneVisitEntities();
+                oneDate.setDate(oneDate.getDate().plusDays(1)); // nie wiem czemu sie poprzedni dzien dodaje :<
                 doctorVisits.add(oneVisitEntity);
 
-                this.bookAVisitRepository.deleteByVisitId(oneVisitModel.getBookAVisitModelId());
-                logger.info("Usuwam zapytanie o wizytę o id:" + oneVisitModel.getBookAVisitModelId() + " doktora o id:" + oneVisitModel.getDoctorId() + ", godzina: " + LocalTime.now());
+                setVisitsFromTimeOrToTime(oneVisitEntity, oneDate);
+
+                BookAVisitModel bookAVisitModel = this.bookAVisitRepository.getBookAVisitModelByVisitId(oneVisitModel.getBookAVisitModelId());
+                bookAVisitModel.setVisibility(false);
+                logger.info("Archiwizuję zapytanie o wizytę o id:" + oneVisitModel.getBookAVisitModelId() + " doktora o id:" + oneVisitModel.getDoctorId() + ", godzina: " + LocalTime.now());
+
                 return;
+            }
+        }
+    }
+
+    private void setVisitsFromTimeOrToTime(OneVisitEntity oneVisitEntity, DatesEntity oneDate) {
+        if (oneDate.getVisitsFromTime() == null) {
+            oneDate.setVisitsFromTime(oneVisitEntity.getFromTime());
+            oneDate.setVisitsToTime(oneVisitEntity.getToTime());
+        } else {
+            if (oneDate.getVisitsFromTime().isAfter(oneVisitEntity.getFromTime())) {
+                oneDate.setVisitsFromTime(oneVisitEntity.getFromTime());
+            }
+            if (oneDate.getVisitsToTime().isBefore(oneVisitEntity.getToTime())) {
+                oneDate.setVisitsToTime(oneVisitEntity.getToTime());
             }
         }
     }

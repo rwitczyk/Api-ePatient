@@ -16,6 +16,7 @@ public class BookAVisitModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int visitId;
 
+    boolean visibility = true;
     int doctorId;
     int patientId;
     int visitHour;

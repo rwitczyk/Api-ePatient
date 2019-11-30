@@ -5,6 +5,7 @@ import com.ePatient.Entities.DatesEntity;
 import com.ePatient.Entities.DoctorEntity;
 import com.ePatient.Entities.OneVisitEntity;
 import com.ePatient.Exceptions.AccountAlreadyExistsException;
+import com.ePatient.Exceptions.CollectionIsNullException;
 import com.ePatient.Exceptions.DoctorNotFoundException;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
@@ -62,18 +63,42 @@ public class DoctorServiceImpl implements DoctorService {
         DoctorEntity doctorEntity = doctorRepository.getDoctorByDoctorId(doctorTimetableModel.getDoctorId());
 
         List<DatesEntity> list = doctorEntity.getDays();
-        if (list != null) { // jezeli nie zainicjalizowalismy listy wczesniej
-            list.add(prepareAllVisitsForOneDay(doctorTimetableModel.getTimetableDate(), doctorTimetableModel.getFromTime(),
-                    doctorTimetableModel.getToTime(), doctorTimetableModel.getMinutes()));
+        if (list != null) {
+
+            for (DatesEntity oneDate : list) {
+                if (oneDate.getDate().equals(doctorTimetableModel.getTimetableDate())) {
+
+                    prepareAllVisitsForOneDay(
+                            oneDate,
+                            doctorTimetableModel.getTimetableDate(),
+                            LocalTime.of(doctorTimetableModel.getFromTime().getHour(), doctorTimetableModel.getFromTime().getMinute()),
+                            LocalTime.of(doctorTimetableModel.getToTime().getHour(), doctorTimetableModel.getToTime().getMinute()),
+                            doctorTimetableModel.getMinutes().getMinute(),
+                            doctorTimetableModel.getDoctorId());
+                    return;
+                }
+            }
             doctorEntity.setDays(list);
         } else {
-            List<DatesEntity> createdList = new ArrayList<>();
-            createdList.add(prepareAllVisitsForOneDay(doctorTimetableModel.getTimetableDate(), doctorTimetableModel.getFromTime(),
-                    doctorTimetableModel.getToTime(), doctorTimetableModel.getMinutes()));
-            doctorEntity.setDays(createdList);
+            throw new CollectionIsNullException("Nie zainicjalizowana lista dni doktora!");
         }
 
         doctorRepository.save(doctorEntity);
+    }
+
+    private void prepareAllVisitsForOneDay(DatesEntity oneDate, LocalDate date, LocalTime fromTime, LocalTime toTime, int minutesInterval, int doctorId) {
+        List<OneVisitEntity> listOfOneVisitEntities = oneDate.getListOfOneVisitEntities();
+        LocalTime actualTime = fromTime;
+
+        while (actualTime.isBefore(toTime)) {
+            listOfOneVisitEntities.add(new OneVisitEntity(doctorId, actualTime, actualTime.plusMinutes(minutesInterval), date, "false", ""));
+            actualTime = actualTime.plusMinutes(minutesInterval);
+        }
+
+        oneDate.setVisitsFromTime(fromTime);
+        oneDate.setVisitsToTime(toTime);
+        oneDate.setDate(date.plusDays(1)); // bo sie dodawal dzien poprzedni :(
+        oneDate.setListOfOneVisitEntities(listOfOneVisitEntities);
     }
 
     @Override
@@ -82,8 +107,8 @@ public class DoctorServiceImpl implements DoctorService {
         List<DatesEntity> list = doctorEntity.getDays();
 
         DatesEntity datesEntity = new DatesEntity();
-        datesEntity.setVisitsFromTime(doctorTimetableModel.getFromTime());
-        datesEntity.setVisitsToTime(doctorTimetableModel.getToTime());
+        datesEntity.setVisitsFromTime(LocalTime.of(doctorTimetableModel.getFromTime().getHour(), doctorTimetableModel.getFromTime().getMinute()));
+        datesEntity.setVisitsToTime(LocalTime.of(doctorTimetableModel.getToTime().getHour(), doctorTimetableModel.getToTime().getMinute()));
         datesEntity.setDate(doctorTimetableModel.getTimetableDate());
 
         list.add(datesEntity);
@@ -93,57 +118,27 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public void createOneVisit(OneVisitEntity oneVisitModel) {
+    public void createEmptyOneVisit(OneVisitModel oneVisitModel) {
         DoctorEntity doctorEntity = doctorRepository.getDoctorByDoctorId(oneVisitModel.getDoctorId());
+        OneVisitEntity oneVisitEntity = parseOneVisitModelToEntity(oneVisitModel);
 
         List<DatesEntity> listDoctorDates = doctorEntity.getDays();
-        for (DatesEntity oneDate : listDoctorDates) {
-            if (oneDate.getDate().equals(oneVisitModel.getVisitDate())) {
-                List<OneVisitEntity> listOfOneVisitEntities = oneDate.getListOfOneVisitEntities();
-                listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getFromTime(), oneVisitModel.getToTime(), "false"));
+        if (listDoctorDates != null) {
+            for (DatesEntity oneDate : listDoctorDates) {
+                if (oneDate.getDate().equals(oneVisitModel.getVisitDate())) {
+                    List<OneVisitEntity> listOfOneVisitEntities = oneDate.getListOfOneVisitEntities();
+                    listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getDoctorId(), oneVisitEntity.getFromTime(), oneVisitEntity.getToTime(), oneVisitModel.getVisitDate(), "false", oneVisitModel.getAdditionalDescription()));
+
+                    setVisitsFromTimeOrToTime(oneVisitEntity, oneDate);
+                    oneDate.setDate(oneDate.getDate().plusDays(1)); // bo sie dodawal dzien poprzedni :(
+                    break;
+                }
             }
-        }
-    }
-
-    private DatesEntity prepareAllVisitsForOneDay(LocalDate date, LocalTime fromTime, LocalTime toTime, int minutesInterval) {
-        DatesEntity datesEntity = new DatesEntity();
-        List<OneVisitEntity> listOfOneVisitEntities = datesEntity.getListOfOneVisitEntities();
-        LocalTime actualTime = fromTime;
-
-        while (actualTime.isBefore(toTime)) {
-            listOfOneVisitEntities.add(new OneVisitEntity(actualTime, actualTime.plusMinutes(minutesInterval), "false"));
-            actualTime = actualTime.plusMinutes(minutesInterval);
-        }
-
-        datesEntity.setVisitsFromTime(fromTime);
-        datesEntity.setVisitsToTime(toTime);
-        datesEntity.setDate(date);
-        datesEntity.setListOfOneVisitEntities(listOfOneVisitEntities);
-        return datesEntity;
-    }
-
-    @Override
-    public void deleteDoctorById(int doctorId) {
-        DoctorEntity doctorEntity = getDoctorById(doctorId);
-        if (doctorEntity != null) {
-            doctorRepository.delete(doctorEntity);
+            doctorEntity.setDays(listDoctorDates);
+            doctorRepository.save(doctorEntity);
         } else {
-            throw new DoctorNotFoundException("Podany doktor nie istnieje!");
+            throw new DoctorNotFoundException("Brak listy dni doktora!");
         }
-    }
-
-    @Override
-    public DoctorEntity getDoctorById(int doctorId) {
-        DoctorEntity doctorEntity = doctorRepository.getDoctorByDoctorId(doctorId);
-        if (doctorEntity != null) {
-            return doctorEntity;
-        }
-        throw new DoctorNotFoundException("Podany doktor nie istnieje");
-    }
-
-    @Override
-    public List<DoctorEntity> getAllDoctors() {
-        return doctorRepository.findAll();
     }
 
     @Override
@@ -210,7 +205,6 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     private OneVisitEntity parseOneVisitModelToEntity(OneVisitModel oneVisitModel) {
-
         return OneVisitEntity.builder()
                 .doctorId(oneVisitModel.getDoctorId())
                 .isBusy(oneVisitModel.getIsBusy())
@@ -221,5 +215,28 @@ public class DoctorServiceImpl implements DoctorService {
                 .build();
     }
 
+    @Override
+    public void deleteDoctorById(int doctorId) {
+        DoctorEntity doctorEntity = getDoctorById(doctorId);
+        if (doctorEntity != null) {
+            doctorRepository.delete(doctorEntity);
+        } else {
+            throw new DoctorNotFoundException("Podany doktor nie istnieje!");
+        }
+    }
+
+    @Override
+    public DoctorEntity getDoctorById(int doctorId) {
+        DoctorEntity doctorEntity = doctorRepository.getDoctorByDoctorId(doctorId);
+        if (doctorEntity != null) {
+            return doctorEntity;
+        }
+        throw new DoctorNotFoundException("Podany doktor nie istnieje");
+    }
+
+    @Override
+    public List<DoctorEntity> getAllDoctors() {
+        return doctorRepository.findAll();
+    }
 
 }

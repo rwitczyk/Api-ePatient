@@ -35,9 +35,12 @@ public class OneVisitEntity {
 
     String additionalDescription;
 
-    public OneVisitEntity(LocalTime fromTime, LocalTime toTime, String isBusy) {
+    public OneVisitEntity(int doctorId, LocalTime fromTime, LocalTime toTime, LocalDate visitDate, String isBusy, String additionalDescription) {
+        this.doctorId = doctorId;
         this.fromTime = fromTime;
         this.toTime = toTime;
+        this.visitDate = visitDate;
         this.isBusy = isBusy;
+        this.additionalDescription = additionalDescription;
     }
 }

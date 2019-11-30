@@ -2,7 +2,6 @@ package com.ePatient.Endpoints;
 
 import com.ePatient.Entities.BookAVisitModel;
 import com.ePatient.Entities.DoctorEntity;
-import com.ePatient.Entities.OneVisitEntity;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 import com.ePatient.Services.DoctorService;
@@ -34,8 +33,8 @@ public class DoctorEndpoint {
     }
 
     @PostMapping("doctor/create-one-visit")
-    public ResponseEntity createOneVisit(@RequestBody OneVisitEntity oneVisitModel) {
-        doctorService.createOneVisit(oneVisitModel);
+    public ResponseEntity createOneVisit(@RequestBody OneVisitModel oneVisitModel) {
+        doctorService.createEmptyOneVisit(oneVisitModel);
         return new ResponseEntity(HttpStatus.OK);
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class DatesEntity {
+public class DatesEntity implements Comparable<DatesEntity>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int dateId;
@@ -31,5 +31,10 @@ public class DatesEntity {
 
     public DatesEntity(LocalDate date) {
         this.date = date;
+    }
+
+    @Override
+    public int compareTo(DatesEntity o) {
+        return getDate().compareTo(o.getDate());
     }
 }

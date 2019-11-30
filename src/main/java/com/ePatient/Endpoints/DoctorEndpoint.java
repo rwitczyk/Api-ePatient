@@ -45,12 +45,6 @@ public class DoctorEndpoint {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("doctor/question-about-book-a-visit")
-    public ResponseEntity questionAboutBookAVisit(@RequestBody BookAVisitModel bookAVisitModel) {
-        doctorService.createQuestionAboutBookAVisit(bookAVisitModel);
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("doctor/create-empty-timetable-for-doctor")
     public ResponseEntity createEmptyTimetableForDoctor(@RequestBody DoctorTimetableModel doctorTimetableModel) {
@@ -85,6 +79,18 @@ public class DoctorEndpoint {
     @PostMapping("visit/approve")
     public ResponseEntity approveBookAVisit(@RequestBody OneVisitModel oneVisitModel) {
         doctorService.approveBookAVisit(oneVisitModel);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("doctor/question-about-book-a-visit")
+    public ResponseEntity questionAboutBookAVisit(@RequestBody BookAVisitModel bookAVisitModel) {
+        doctorService.createQuestionAboutBookAVisit(bookAVisitModel);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("doctor/cancelOneVisitToAccept/{visitId}")
+    public ResponseEntity cancelVisitToAccept(@PathVariable int visitId){
+        doctorService.cancelVisitToAccept(visitId);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

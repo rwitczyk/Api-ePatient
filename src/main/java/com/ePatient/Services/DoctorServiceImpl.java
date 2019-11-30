@@ -190,6 +190,13 @@ public class DoctorServiceImpl implements DoctorService {
         }
     }
 
+    @Override
+    public void cancelVisitToAccept(int visitId) {
+        BookAVisitModel bookAVisitModel = this.bookAVisitRepository.getBookAVisitModelByVisitId(visitId);
+        bookAVisitModel.setVisibility(false);
+        logger.info("Archiwizuję zapytanie o wizytę o id:" + visitId + " doktora o id:" + ", godzina: " + LocalTime.now());
+    }
+
     private void setVisitsFromTimeOrToTime(OneVisitEntity oneVisitEntity, DatesEntity oneDate) {
         if (oneDate.getVisitsFromTime() == null) {
             oneDate.setVisitsFromTime(oneVisitEntity.getFromTime());

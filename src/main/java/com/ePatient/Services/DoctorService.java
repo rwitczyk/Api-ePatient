@@ -18,4 +18,5 @@ public interface DoctorService {
     void createQuestionAboutBookAVisit(BookAVisitModel bookAVisitModel);
     BookAVisitModel getBookAVisitModelById(int id);
     void approveBookAVisit(OneVisitModel oneVisitModel);
+    void cancelVisitToAccept(int visitId);
 }

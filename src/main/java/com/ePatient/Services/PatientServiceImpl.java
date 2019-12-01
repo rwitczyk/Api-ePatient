@@ -1,14 +1,19 @@
 package com.ePatient.Services;
 
+import com.ePatient.Entities.OneVisitEntity;
 import com.ePatient.Entities.PatientEntity;
 import com.ePatient.Exceptions.AccountAlreadyExistsException;
 import com.ePatient.Exceptions.PatientNotFoundException;
+import com.ePatient.Models.PatientVisitsModel;
+import com.ePatient.Repository.DoctorRepository;
+import com.ePatient.Repository.OneVisitRepository;
 import com.ePatient.Repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,11 +22,17 @@ public class PatientServiceImpl implements PatientService {
 
     private PatientRepository patientRepository;
 
+    private OneVisitRepository oneVisitRepository;
+
+    private DoctorRepository doctorRepository;
+
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public PatientServiceImpl(PatientRepository patientRepository, PasswordEncoder passwordEncoder) {
+    public PatientServiceImpl(PatientRepository patientRepository, OneVisitRepository oneVisitRepository, DoctorRepository doctorRepository, PasswordEncoder passwordEncoder) {
         this.patientRepository = patientRepository;
+        this.oneVisitRepository = oneVisitRepository;
+        this.doctorRepository = doctorRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -83,6 +94,31 @@ public class PatientServiceImpl implements PatientService {
             return patientEntities;
         }
         throw new PatientNotFoundException("Brak pacjentow o takim id:" + doctorId + " doktora");
+    }
+
+    @Override
+    public List<PatientVisitsModel> getAllPatientVisitsByPatientId(int patientId) {
+        List<OneVisitEntity> list = this.oneVisitRepository.getAllByPatientId(patientId);
+
+        List<PatientVisitsModel> listOfPatientVisits = new ArrayList<>();
+        for (OneVisitEntity oneVisit : list) {
+            listOfPatientVisits.add(parseOneVisitEntityToPatientVisitsModel(oneVisit));
+        }
+
+        return listOfPatientVisits;
+    }
+
+    private PatientVisitsModel parseOneVisitEntityToPatientVisitsModel(OneVisitEntity oneVisit) {
+        return PatientVisitsModel.builder()
+                .visitId(oneVisit.getVisitId())
+                .patientId(oneVisit.getPatientId())
+                .doctor(this.doctorRepository.getDoctorByDoctorId(oneVisit.getDoctorId()))
+                .fromTime(oneVisit.getFromTime())
+                .toTime(oneVisit.getToTime())
+                .isBusy(oneVisit.getIsBusy())
+                .additionalDescription(oneVisit.getAdditionalDescription())
+                .visitDate(oneVisit.getVisitDate())
+                .build();
     }
 
 

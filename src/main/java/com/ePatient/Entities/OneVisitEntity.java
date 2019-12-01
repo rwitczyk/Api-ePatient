@@ -25,6 +25,8 @@ public class OneVisitEntity {
 
     int doctorId;
 
+    int patientId;
+
     LocalTime fromTime;
 
     LocalTime toTime;
@@ -34,6 +36,16 @@ public class OneVisitEntity {
     String isBusy;
 
     String additionalDescription;
+
+    public OneVisitEntity(int doctorId, int patientId, LocalTime fromTime, LocalTime toTime, LocalDate visitDate, String isBusy, String additionalDescription) {
+        this.doctorId = doctorId;
+        this.patientId = patientId;
+        this.fromTime = fromTime;
+        this.toTime = toTime;
+        this.visitDate = visitDate;
+        this.isBusy = isBusy;
+        this.additionalDescription = additionalDescription;
+    }
 
     public OneVisitEntity(int doctorId, LocalTime fromTime, LocalTime toTime, LocalDate visitDate, String isBusy, String additionalDescription) {
         this.doctorId = doctorId;

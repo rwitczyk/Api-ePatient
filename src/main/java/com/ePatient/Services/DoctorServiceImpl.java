@@ -127,7 +127,7 @@ public class DoctorServiceImpl implements DoctorService {
             for (DatesEntity oneDate : listDoctorDates) {
                 if (oneDate.getDate().equals(oneVisitModel.getVisitDate())) {
                     List<OneVisitEntity> listOfOneVisitEntities = oneDate.getListOfOneVisitEntities();
-                    listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getDoctorId(), oneVisitEntity.getFromTime(), oneVisitEntity.getToTime(), oneVisitModel.getVisitDate(), "false", oneVisitModel.getAdditionalDescription()));
+                    listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getDoctorId(), oneVisitModel.getPatientId(), oneVisitEntity.getFromTime(), oneVisitEntity.getToTime(), oneVisitModel.getVisitDate(), "false", oneVisitModel.getAdditionalDescription()));
 
                     setVisitsFromTimeOrToTime(oneVisitEntity, oneDate);
                     oneDate.setDate(oneDate.getDate().plusDays(1)); // bo sie dodawal dzien poprzedni :(
@@ -214,6 +214,7 @@ public class DoctorServiceImpl implements DoctorService {
     private OneVisitEntity parseOneVisitModelToEntity(OneVisitModel oneVisitModel) {
         return OneVisitEntity.builder()
                 .doctorId(oneVisitModel.getDoctorId())
+                .patientId(oneVisitModel.getPatientId())
                 .isBusy(oneVisitModel.getIsBusy())
                 .additionalDescription(oneVisitModel.getAdditionalDescription())
                 .visitDate(oneVisitModel.getVisitDate())

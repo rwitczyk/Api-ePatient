@@ -11,6 +11,8 @@ public class OneVisitModel {
 
     int doctorId;
 
+    int patientId;
+
     TimeModel fromTime;
 
     TimeModel toTime;

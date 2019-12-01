@@ -1,6 +1,7 @@
 package com.ePatient.Endpoints;
 
 import com.ePatient.Entities.PatientEntity;
+import com.ePatient.Models.PatientVisitsModel;
 import com.ePatient.Services.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,38 +30,39 @@ public class PatientEndpoint {
     }
 
     @GetMapping("patient/id/{id}")
-    public ResponseEntity<PatientEntity> getPatientById(@PathVariable int id)
-    {
+    public ResponseEntity<PatientEntity> getPatientById(@PathVariable int id) {
         PatientEntity patientEntity = patientService.getPatientById(id);
         return new ResponseEntity<>(patientEntity, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_PATIENT')")
     @GetMapping("patient/delete/{id}")
-    public ResponseEntity deletePatientById(@PathVariable int id)
-    {
+    public ResponseEntity deletePatientById(@PathVariable int id) {
         patientService.deletePatient(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("patients")
-    public ResponseEntity<Iterable<PatientEntity>> getAllPatients()
-    {
+    public ResponseEntity<Iterable<PatientEntity>> getAllPatients() {
         Iterable<PatientEntity> patients = patientService.getAllPatients();
-        return new ResponseEntity<>(patients,HttpStatus.OK);
+        return new ResponseEntity<>(patients, HttpStatus.OK);
     }
 
     @GetMapping("patient/pesel/{peselNumber}")
-    public ResponseEntity<PatientEntity> getPatientByPeselNumber(@PathVariable String peselNumber)
-    {
+    public ResponseEntity<PatientEntity> getPatientByPeselNumber(@PathVariable String peselNumber) {
         PatientEntity patientEntity = patientService.getPatientByPesel(peselNumber);
-        return new ResponseEntity<>(patientEntity,HttpStatus.OK);
+        return new ResponseEntity<>(patientEntity, HttpStatus.OK);
     }
 
     @GetMapping("patient/doctorid/{id}")
-    public ResponseEntity<List<PatientEntity>> getPatientsByDoctorId(@PathVariable int id)
-    {
+    public ResponseEntity<List<PatientEntity>> getPatientsByDoctorId(@PathVariable int id) {
         List<PatientEntity> patientEntities = patientService.getPatientsByDoctorId(id);
-        return new ResponseEntity<>(patientEntities,HttpStatus.OK);
+        return new ResponseEntity<>(patientEntities, HttpStatus.OK);
+    }
+
+    @GetMapping("patient/getAllPatientVisits/{patientId}")
+    public ResponseEntity<List<PatientVisitsModel>> getAllPatientVisnntitsByPatientId(@PathVariable int patientId) {
+        List<PatientVisitsModel> patientVisits = patientService.getAllPatientVisitsByPatientId(patientId);
+        return new ResponseEntity<>(patientVisits, HttpStatus.OK);
     }
 }

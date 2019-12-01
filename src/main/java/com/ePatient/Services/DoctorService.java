@@ -19,4 +19,6 @@ public interface DoctorService {
     BookAVisitModel getBookAVisitModelById(int id);
     void approveBookAVisit(OneVisitModel oneVisitModel);
     void cancelVisitToAccept(int visitId);
+
+    void reserveAVisit(int patientId, int visitId);
 }

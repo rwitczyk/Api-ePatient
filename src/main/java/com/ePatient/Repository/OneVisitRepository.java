@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface OneVisitRepository extends JpaRepository<OneVisitEntity, Integer> {
     List<OneVisitEntity> getAllByPatientId(int patientId);
+
+    OneVisitEntity getByVisitId(int visitId);
 }

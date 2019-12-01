@@ -89,8 +89,14 @@ public class DoctorEndpoint {
     }
 
     @PostMapping("doctor/cancelOneVisitToAccept/{visitId}")
-    public ResponseEntity cancelVisitToAccept(@PathVariable int visitId){
+    public ResponseEntity cancelVisitToAccept(@PathVariable int visitId) {
         doctorService.cancelVisitToAccept(visitId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("doctor/reserveAVisit/{patientId}/{visitId}")
+    public ResponseEntity reserveAVisit(@PathVariable int patientId, @PathVariable int visitId) {
+        doctorService.reserveAVisit(patientId, visitId);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

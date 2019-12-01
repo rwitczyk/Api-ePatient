@@ -7,7 +7,9 @@ import java.time.LocalDate;
 @Data
 public class OneVisitModel {
 
-    int bookAVisitModelId;
+    int visitId;
+
+    int bookAVisitModelId; // aby archiwizowac prośby o wizytę
 
     int doctorId;
 

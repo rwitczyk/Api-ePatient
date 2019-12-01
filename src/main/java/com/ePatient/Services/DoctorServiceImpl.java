@@ -11,6 +11,7 @@ import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 import com.ePatient.Repository.BookAVisitRepository;
 import com.ePatient.Repository.DoctorRepository;
+import com.ePatient.Repository.OneVisitRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +30,20 @@ public class DoctorServiceImpl implements DoctorService {
 
     private DoctorRepository doctorRepository;
 
-    private PasswordEncoder passwordEncoder;
-
     private BookAVisitRepository bookAVisitRepository;
+
+    private OneVisitRepository oneVisitRepository;
+
+    private PasswordEncoder passwordEncoder;
 
     private static Logger logger = LoggerFactory.getLogger(DoctorServiceImpl.class);
 
     @Autowired
-    public DoctorServiceImpl(DoctorRepository doctorRepository, PasswordEncoder passwordEncoder, BookAVisitRepository bookAVisitRepository) {
+    public DoctorServiceImpl(DoctorRepository doctorRepository, PasswordEncoder passwordEncoder, BookAVisitRepository bookAVisitRepository, OneVisitRepository oneVisitRepository) {
         this.doctorRepository = doctorRepository;
         this.passwordEncoder = passwordEncoder;
         this.bookAVisitRepository = bookAVisitRepository;
+        this.oneVisitRepository = oneVisitRepository;
     }
 
     @Override
@@ -197,6 +201,14 @@ public class DoctorServiceImpl implements DoctorService {
         logger.info("Archiwizuję zapytanie o wizytę o id:" + visitId + " doktora o id:" + ", godzina: " + LocalTime.now());
     }
 
+    @Override
+    public void reserveAVisit(int patientId, int visitId) {
+        OneVisitEntity oneVisitEntity = oneVisitRepository.getByVisitId(visitId);
+        oneVisitEntity.setPatientId(patientId);
+        oneVisitEntity.setIsBusy("true");
+        oneVisitRepository.save(oneVisitEntity);
+    }
+
     private void setVisitsFromTimeOrToTime(OneVisitEntity oneVisitEntity, DatesEntity oneDate) {
         if (oneDate.getVisitsFromTime() == null) {
             oneDate.setVisitsFromTime(oneVisitEntity.getFromTime());
@@ -213,6 +225,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     private OneVisitEntity parseOneVisitModelToEntity(OneVisitModel oneVisitModel) {
         return OneVisitEntity.builder()
+                .visitId(oneVisitModel.getVisitId())
                 .doctorId(oneVisitModel.getDoctorId())
                 .patientId(oneVisitModel.getPatientId())
                 .isBusy(oneVisitModel.getIsBusy())

@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalTime;
 
 @Entity
@@ -31,13 +31,13 @@ public class OneVisitEntity {
 
     LocalTime toTime;
 
-    LocalDate visitDate;
+    Instant visitDate;
 
     String isBusy;
 
     String additionalDescription;
 
-    public OneVisitEntity(int doctorId, int patientId, LocalTime fromTime, LocalTime toTime, LocalDate visitDate, String isBusy, String additionalDescription) {
+    public OneVisitEntity(int doctorId, int patientId, LocalTime fromTime, LocalTime toTime, Instant visitDate, String isBusy, String additionalDescription) {
         this.doctorId = doctorId;
         this.patientId = patientId;
         this.fromTime = fromTime;
@@ -47,7 +47,7 @@ public class OneVisitEntity {
         this.additionalDescription = additionalDescription;
     }
 
-    public OneVisitEntity(int doctorId, LocalTime fromTime, LocalTime toTime, LocalDate visitDate, String isBusy, String additionalDescription) {
+    public OneVisitEntity(int doctorId, LocalTime fromTime, LocalTime toTime, Instant visitDate, String isBusy, String additionalDescription) {
         this.doctorId = doctorId;
         this.fromTime = fromTime;
         this.toTime = toTime;

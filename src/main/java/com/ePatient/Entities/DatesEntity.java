@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class DatesEntity implements Comparable<DatesEntity>{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int dateId;
 
-    LocalDate date;
+    Instant date;
 
     LocalTime visitsFromTime;
 
@@ -29,9 +29,9 @@ public class DatesEntity implements Comparable<DatesEntity>{
     List<OneVisitEntity> listOfOneVisitEntities = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
-    List<BookAVisitModel> listOfVisitsToApprove = new ArrayList<>();
+    List<BookAVisitEntity> listOfVisitsToApprove = new ArrayList<>();
 
-    public DatesEntity(LocalDate date) {
+    public DatesEntity(Instant date) {
         this.date = date;
     }
 

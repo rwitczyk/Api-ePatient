@@ -4,7 +4,7 @@ import com.ePatient.Entities.DoctorEntity;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalTime;
 
 @Data
@@ -20,7 +20,7 @@ public class PatientVisitsModel {
 
     LocalTime toTime;
 
-    LocalDate visitDate;
+    Instant visitDate;
 
     String isBusy;
 

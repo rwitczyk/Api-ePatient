@@ -1,7 +1,8 @@
 package com.ePatient.Services;
 
-import com.ePatient.Entities.BookAVisitModel;
+import com.ePatient.Entities.BookAVisitEntity;
 import com.ePatient.Entities.DoctorEntity;
+import com.ePatient.Models.BookAVisitModel;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 
@@ -16,7 +17,7 @@ public interface DoctorService {
     DoctorEntity getDoctorById(int id);
     List<DoctorEntity> getAllDoctors();
     void createQuestionAboutBookAVisit(BookAVisitModel bookAVisitModel);
-    BookAVisitModel getBookAVisitModelById(int id);
+    BookAVisitEntity getBookAVisitModelById(int id);
     void approveBookAVisit(OneVisitModel oneVisitModel);
     void cancelVisitToAccept(int visitId);
     void reserveAVisit(int patientId, int visitId, String visitDescription);

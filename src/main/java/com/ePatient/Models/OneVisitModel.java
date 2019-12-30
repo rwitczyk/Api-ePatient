@@ -2,8 +2,6 @@ package com.ePatient.Models;
 
 import lombok.Data;
 
-import java.time.LocalDate;
-
 @Data
 public class OneVisitModel {
 
@@ -19,7 +17,7 @@ public class OneVisitModel {
 
     TimeModel toTime;
 
-    LocalDate visitDate;
+    String visitDate;
 
     String isBusy;
 

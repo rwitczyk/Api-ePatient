@@ -1,7 +1,8 @@
 package com.ePatient.Endpoints;
 
-import com.ePatient.Entities.BookAVisitModel;
+import com.ePatient.Entities.BookAVisitEntity;
 import com.ePatient.Entities.DoctorEntity;
+import com.ePatient.Models.BookAVisitModel;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 import com.ePatient.Services.DoctorService;
@@ -72,7 +73,7 @@ public class DoctorEndpoint {
     }
 
     @GetMapping("visit/{id}")
-    public ResponseEntity<BookAVisitModel> getBookAVisitModelByVisitId(@PathVariable int id) {
+    public ResponseEntity<BookAVisitEntity> getBookAVisitModelByVisitId(@PathVariable int id) {
         return new ResponseEntity<>(doctorService.getBookAVisitModelById(id), HttpStatus.OK);
     }
 

@@ -1,6 +1,6 @@
 package com.ePatient.Services;
 
-import com.ePatient.Entities.BookAVisitModel;
+import com.ePatient.Entities.BookAVisitEntity;
 import com.ePatient.Entities.DatesEntity;
 import com.ePatient.Entities.DoctorEntity;
 import com.ePatient.Entities.OneVisitEntity;
@@ -8,6 +8,7 @@ import com.ePatient.Exceptions.AccountAlreadyExistsException;
 import com.ePatient.Exceptions.CollectionIsNullException;
 import com.ePatient.Exceptions.DoctorNotFoundException;
 import com.ePatient.Exceptions.VisitAlreadyExistsException;
+import com.ePatient.Models.BookAVisitModel;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 import com.ePatient.Repository.BookAVisitRepository;
@@ -21,7 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,8 @@ import java.util.List;
 @Service
 @Transactional
 public class DoctorServiceImpl implements DoctorService {
+
+    private static final int ONEDAYSECONDS = 86400;
 
     private DoctorRepository doctorRepository;
 
@@ -58,7 +63,7 @@ public class DoctorServiceImpl implements DoctorService {
 
             List<DatesEntity> emptyDates = new ArrayList<>();
             for (int i = 0; i < 90; i++) {
-                emptyDates.add(new DatesEntity(LocalDate.now().plusDays(i)));
+                emptyDates.add(new DatesEntity(Instant.now().plusSeconds(ONEDAYSECONDS * i)));
             }
             doctorEntity.setDays(emptyDates);
             doctorEntity.setPassword(passwordEncoder.encode(doctorEntity.getPassword()));
@@ -76,10 +81,10 @@ public class DoctorServiceImpl implements DoctorService {
         if (list != null) {
 
             for (DatesEntity oneDate : list) {
-                if (oneDate.getDate().equals(doctorTimetableModel.getTimetableDate())) {
+                if (oneDate.getDate().toString().substring(0, 10).equals(doctorTimetableModel.getTimetableDate())) {
                     prepareAllVisitsForOneDay(
                             oneDate,
-                            doctorTimetableModel.getTimetableDate(),
+                            oneDate.getDate(),
                             LocalTime.of(doctorTimetableModel.getFromTime().getHour(), doctorTimetableModel.getFromTime().getMinute()),
                             LocalTime.of(doctorTimetableModel.getToTime().getHour(), doctorTimetableModel.getToTime().getMinute()),
                             doctorTimetableModel.getMinutes().getMinute(),
@@ -95,7 +100,7 @@ public class DoctorServiceImpl implements DoctorService {
         doctorRepository.save(doctorEntity);
     }
 
-    private void prepareAllVisitsForOneDay(DatesEntity oneDate, LocalDate date, LocalTime fromTime, LocalTime toTime, int minutesInterval, int doctorId) {
+    private void prepareAllVisitsForOneDay(DatesEntity oneDate, Instant date, LocalTime fromTime, LocalTime toTime, int minutesInterval, int doctorId) {
         List<OneVisitEntity> listOfOneVisitEntities = new ArrayList<>();
         LocalTime actualTime = fromTime;
 
@@ -106,7 +111,7 @@ public class DoctorServiceImpl implements DoctorService {
 
         oneDate.setVisitsFromTime(fromTime);
         oneDate.setVisitsToTime(toTime);
-        oneDate.setDate(date.plusDays(1)); // bo sie dodawal dzien poprzedni :(
+        oneDate.setDate(date);
         oneDate.setListOfOneVisitEntities(listOfOneVisitEntities);
     }
 
@@ -118,7 +123,7 @@ public class DoctorServiceImpl implements DoctorService {
         DatesEntity datesEntity = new DatesEntity();
         datesEntity.setVisitsFromTime(LocalTime.of(doctorTimetableModel.getFromTime().getHour(), doctorTimetableModel.getFromTime().getMinute()));
         datesEntity.setVisitsToTime(LocalTime.of(doctorTimetableModel.getToTime().getHour(), doctorTimetableModel.getToTime().getMinute()));
-        datesEntity.setDate(doctorTimetableModel.getTimetableDate());
+        datesEntity.setDate(Instant.parse(doctorTimetableModel.getTimetableDate()));
 
         list.add(datesEntity);
         doctorEntity.setDays(list);
@@ -134,12 +139,12 @@ public class DoctorServiceImpl implements DoctorService {
         List<DatesEntity> listDoctorDates = doctorEntity.getDays();
         if (listDoctorDates != null) {
             for (DatesEntity oneDate : listDoctorDates) {
-                if (oneDate.getDate().equals(oneVisitModel.getVisitDate())) {
+                if (oneDate.getDate().toString().substring(0, 10).equals(oneVisitModel.getVisitDate())) {
                     List<OneVisitEntity> listOfOneVisitEntities = oneDate.getListOfOneVisitEntities();
-                    listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getDoctorId(), oneVisitModel.getPatientId(), oneVisitEntity.getFromTime(), oneVisitEntity.getToTime(), oneVisitModel.getVisitDate(), "false", oneVisitModel.getAdditionalDescription()));
+                    listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getDoctorId(), oneVisitModel.getPatientId(), oneVisitEntity.getFromTime(), oneVisitEntity.getToTime(), oneDate.getDate(), "false", oneVisitModel.getAdditionalDescription()));
 
                     setVisitsFromTimeOrToTime(oneVisitEntity, oneDate);
-                    oneDate.setDate(oneDate.getDate().plusDays(1)); // bo sie dodawal dzien poprzedni :(
+                    oneDate.setDate(oneDate.getDate());
                     break;
                 }
             }
@@ -156,24 +161,43 @@ public class DoctorServiceImpl implements DoctorService {
 
         List<DatesEntity> listDoctorDates = doctor.getDays();
         for (DatesEntity oneDate : listDoctorDates) {
-            if (oneDate.getDate().equals(bookAVisitModel.getVisitDate())) {
-                List<BookAVisitModel> listOfVisitsToApprove = oneDate.getListOfVisitsToApprove();
-                bookAVisitModel.setVisitDate(bookAVisitModel.getVisitDate().plusDays(1)); // bo sie dodawal dzien poprzedni :(
-                listOfVisitsToApprove.add(bookAVisitModel);
+            if (oneDate.getDate().toString().substring(0, 10).equals(bookAVisitModel.getVisitDate())) {
+                List<BookAVisitEntity> listOfVisitsToApprove = oneDate.getListOfVisitsToApprove();
+                bookAVisitModel.setVisitDate(bookAVisitModel.getVisitDate());
+                listOfVisitsToApprove.add(parseBookAVisitModelToEntity(bookAVisitModel));
 
                 return;
             }
         }
     }
 
+    private BookAVisitEntity parseBookAVisitModelToEntity(BookAVisitModel bookAVisitModel) {
+        try {
+            return BookAVisitEntity.builder()
+                    .doctorId(bookAVisitModel.getDoctorId())
+                    .patientId(bookAVisitModel.getPatientId())
+                    .additionalDescription(bookAVisitModel.getAdditionalDescription())
+                    .visibility(bookAVisitModel.isVisibility())
+                    .visitDate(parseStringToInstantObject(bookAVisitModel.getVisitDate()))
+                    .visitHour(bookAVisitModel.getVisitHour())
+                    .visitMinute(bookAVisitModel.getVisitMinute())
+                    .visitId(bookAVisitModel.getVisitId())
+                    .build();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     @Override
-    public BookAVisitModel getBookAVisitModelById(int id) {
-        BookAVisitModel bookAVisitModel = this.bookAVisitRepository.getBookAVisitModelByVisitId(id);
-        if (bookAVisitModel == null) {
+    public BookAVisitEntity getBookAVisitModelById(int id) {
+        BookAVisitEntity bookAVisitEntity = this.bookAVisitRepository.getBookAVisitModelByVisitId(id);
+        if (bookAVisitEntity == null) {
             throw new DoctorNotFoundException("Nie znaleziono wizyty o id: " + id);
         }
 
-        return bookAVisitModel;
+        return bookAVisitEntity;
     }
 
     @Override
@@ -183,15 +207,15 @@ public class DoctorServiceImpl implements DoctorService {
         oneVisitEntity.setVisitDate(oneVisitEntity.getVisitDate());
         List<DatesEntity> listDoctorDates = doctor.getDays();
         for (DatesEntity oneDate : listDoctorDates) {
-            if (oneDate.getDate().equals(oneVisitEntity.getVisitDate())) {
+            if (oneDate.getDate().toString().substring(0, 10).equals(oneVisitEntity.getVisitDate().toString().substring(0, 10))) {
                 List<OneVisitEntity> doctorVisits = oneDate.getListOfOneVisitEntities();
-                oneDate.setDate(oneDate.getDate().plusDays(1)); // nie wiem czemu sie poprzedni dzien dodaje :<
+                oneDate.setDate(oneDate.getDate());
                 doctorVisits.add(oneVisitEntity);
 
                 setVisitsFromTimeOrToTime(oneVisitEntity, oneDate);
 
-                BookAVisitModel bookAVisitModel = this.bookAVisitRepository.getBookAVisitModelByVisitId(oneVisitModel.getBookAVisitModelId());
-                bookAVisitModel.setVisibility(false);
+                BookAVisitEntity bookAVisitEntity = this.bookAVisitRepository.getBookAVisitModelByVisitId(oneVisitModel.getBookAVisitModelId());
+                bookAVisitEntity.setVisibility(false);
                 logger.info("Archiwizuję zapytanie o wizytę o id:" + oneVisitModel.getBookAVisitModelId() + " doktora o id:" + oneVisitModel.getDoctorId() + ", godzina: " + LocalTime.now());
 
                 return;
@@ -201,7 +225,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public void cancelVisitToAccept(int visitId) {
-        BookAVisitModel bookAVisitModel = this.bookAVisitRepository.getBookAVisitModelByVisitId(visitId);
+        BookAVisitEntity bookAVisitModel = this.bookAVisitRepository.getBookAVisitModelByVisitId(visitId);
         bookAVisitModel.setVisibility(false);
         logger.info("Archiwizuję zapytanie o wizytę o id:" + visitId + " doktora o id:" + ", godzina: " + LocalTime.now());
     }
@@ -219,7 +243,7 @@ public class DoctorServiceImpl implements DoctorService {
     public void changeOneDayDescription(int dateId, String description) {
         DatesEntity datesEntity = datesRepository.getByDateId(dateId);
         datesEntity.setOneDayDescription(description);
-        datesEntity.setDate(datesEntity.getDate().plusDays(1));
+        datesEntity.setDate(datesEntity.getDate());
         logger.info("Zmieniam opis dnia");
     }
 
@@ -242,16 +266,27 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     private OneVisitEntity parseOneVisitModelToEntity(OneVisitModel oneVisitModel) {
-        return OneVisitEntity.builder()
-                .visitId(oneVisitModel.getVisitId())
-                .doctorId(oneVisitModel.getDoctorId())
-                .patientId(oneVisitModel.getPatientId())
-                .isBusy(oneVisitModel.getIsBusy())
-                .additionalDescription(oneVisitModel.getAdditionalDescription())
-                .visitDate(oneVisitModel.getVisitDate())
-                .fromTime(LocalTime.of(oneVisitModel.getFromTime().getHour(), oneVisitModel.getFromTime().getMinute()))
-                .toTime(LocalTime.of(oneVisitModel.getToTime().getHour(), oneVisitModel.getToTime().getMinute()))
-                .build();
+        try {
+            return OneVisitEntity.builder()
+                    .visitId(oneVisitModel.getVisitId())
+                    .doctorId(oneVisitModel.getDoctorId())
+                    .patientId(oneVisitModel.getPatientId())
+                    .isBusy(oneVisitModel.getIsBusy())
+                    .additionalDescription(oneVisitModel.getAdditionalDescription())
+                    .visitDate(parseStringToInstantObject(oneVisitModel.getVisitDate()))
+                    .fromTime(LocalTime.of(oneVisitModel.getFromTime().getHour(), oneVisitModel.getFromTime().getMinute()))
+                    .toTime(LocalTime.of(oneVisitModel.getToTime().getHour(), oneVisitModel.getToTime().getMinute()))
+                    .build();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Instant parseStringToInstantObject(String date) throws ParseException {
+        Instant returnDate = new SimpleDateFormat("yyyy-MM-dd").parse(date.substring(0,10)).toInstant();
+        returnDate = returnDate.plusSeconds(ONEDAYSECONDS);
+        return returnDate;
     }
 
     @Override

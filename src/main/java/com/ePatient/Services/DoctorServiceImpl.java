@@ -7,9 +7,11 @@ import com.ePatient.Entities.OneVisitEntity;
 import com.ePatient.Exceptions.AccountAlreadyExistsException;
 import com.ePatient.Exceptions.CollectionIsNullException;
 import com.ePatient.Exceptions.DoctorNotFoundException;
+import com.ePatient.Exceptions.VisitAlreadyExistsException;
 import com.ePatient.Models.DoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 import com.ePatient.Repository.BookAVisitRepository;
+import com.ePatient.Repository.DatesRepository;
 import com.ePatient.Repository.DoctorRepository;
 import com.ePatient.Repository.OneVisitRepository;
 import org.slf4j.Logger;
@@ -34,16 +36,20 @@ public class DoctorServiceImpl implements DoctorService {
 
     private OneVisitRepository oneVisitRepository;
 
+    private DatesRepository datesRepository;
+
     private PasswordEncoder passwordEncoder;
+
 
     private static Logger logger = LoggerFactory.getLogger(DoctorServiceImpl.class);
 
     @Autowired
-    public DoctorServiceImpl(DoctorRepository doctorRepository, PasswordEncoder passwordEncoder, BookAVisitRepository bookAVisitRepository, OneVisitRepository oneVisitRepository) {
+    public DoctorServiceImpl(DoctorRepository doctorRepository, PasswordEncoder passwordEncoder, BookAVisitRepository bookAVisitRepository, OneVisitRepository oneVisitRepository, DatesRepository datesRepository) {
         this.doctorRepository = doctorRepository;
         this.passwordEncoder = passwordEncoder;
         this.bookAVisitRepository = bookAVisitRepository;
         this.oneVisitRepository = oneVisitRepository;
+        this.datesRepository = datesRepository;
     }
 
     @Override
@@ -71,7 +77,6 @@ public class DoctorServiceImpl implements DoctorService {
 
             for (DatesEntity oneDate : list) {
                 if (oneDate.getDate().equals(doctorTimetableModel.getTimetableDate())) {
-
                     prepareAllVisitsForOneDay(
                             oneDate,
                             doctorTimetableModel.getTimetableDate(),
@@ -91,7 +96,7 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     private void prepareAllVisitsForOneDay(DatesEntity oneDate, LocalDate date, LocalTime fromTime, LocalTime toTime, int minutesInterval, int doctorId) {
-        List<OneVisitEntity> listOfOneVisitEntities = oneDate.getListOfOneVisitEntities();
+        List<OneVisitEntity> listOfOneVisitEntities = new ArrayList<>();
         LocalTime actualTime = fromTime;
 
         while (actualTime.isBefore(toTime)) {
@@ -202,11 +207,20 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public void reserveAVisit(int patientId, int visitId) {
+    public void reserveAVisit(int patientId, int visitId, String visitDescription) {
         OneVisitEntity oneVisitEntity = oneVisitRepository.getByVisitId(visitId);
         oneVisitEntity.setPatientId(patientId);
         oneVisitEntity.setIsBusy("true");
+        oneVisitEntity.setAdditionalDescription(visitDescription);
         oneVisitRepository.save(oneVisitEntity);
+    }
+
+    @Override
+    public void changeOneDayDescription(int dateId, String description) {
+        DatesEntity datesEntity = datesRepository.getByDateId(dateId);
+        datesEntity.setOneDayDescription(description);
+        datesEntity.setDate(datesEntity.getDate().plusDays(1));
+        logger.info("Zmieniam opis dnia");
     }
 
     private void setVisitsFromTimeOrToTime(OneVisitEntity oneVisitEntity, DatesEntity oneDate) {
@@ -214,11 +228,15 @@ public class DoctorServiceImpl implements DoctorService {
             oneDate.setVisitsFromTime(oneVisitEntity.getFromTime());
             oneDate.setVisitsToTime(oneVisitEntity.getToTime());
         } else {
-            if (oneDate.getVisitsFromTime().isAfter(oneVisitEntity.getFromTime())) {
-                oneDate.setVisitsFromTime(oneVisitEntity.getFromTime());
-            }
-            if (oneDate.getVisitsToTime().isBefore(oneVisitEntity.getToTime())) {
-                oneDate.setVisitsToTime(oneVisitEntity.getToTime());
+            if (oneVisitEntity.getFromTime().isAfter(oneDate.getVisitsToTime()) || oneVisitEntity.getToTime().isBefore(oneDate.getVisitsFromTime())) {
+                if (oneDate.getVisitsFromTime().isAfter(oneVisitEntity.getFromTime())) {
+                    oneDate.setVisitsFromTime(oneVisitEntity.getFromTime());
+                }
+                if (oneDate.getVisitsToTime().isBefore(oneVisitEntity.getToTime())) {
+                    oneDate.setVisitsToTime(oneVisitEntity.getToTime());
+                }
+            } else {
+                throw new VisitAlreadyExistsException("Istnieje już wizyta w podanym terminie!");
             }
         }
     }

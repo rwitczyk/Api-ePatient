@@ -23,6 +23,8 @@ public class DatesEntity implements Comparable<DatesEntity>{
 
     LocalTime visitsToTime;
 
+    String oneDayDescription = "";
+
     @OneToMany(cascade = CascadeType.ALL)
     List<OneVisitEntity> listOfOneVisitEntities = new ArrayList<>();
 

@@ -94,9 +94,15 @@ public class DoctorEndpoint {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("doctor/reserveAVisit/{patientId}/{visitId}")
-    public ResponseEntity reserveAVisit(@PathVariable int patientId, @PathVariable int visitId) {
-        doctorService.reserveAVisit(patientId, visitId);
+    @PostMapping("doctor/reserveAVisit/{patientId}/{visitId}/{visitDescription}")
+    public ResponseEntity reserveAVisit(@PathVariable int patientId, @PathVariable int visitId, @PathVariable String visitDescription) {
+        doctorService.reserveAVisit(patientId, visitId, visitDescription);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("doctor/changeOneDayDescription/{dateId}/{description}")
+    public ResponseEntity changeOneDayDescription(@PathVariable int dateId, @PathVariable String description){
+        doctorService.changeOneDayDescription(dateId, description);
+        return ResponseEntity.ok("");
     }
 }

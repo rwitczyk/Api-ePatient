@@ -4,8 +4,10 @@ import com.ePatient.Entities.BookAVisitEntity;
 import com.ePatient.Entities.DoctorEntity;
 import com.ePatient.Models.BookAVisitModel;
 import com.ePatient.Models.DoctorTimetableModel;
+import com.ePatient.Models.MultiDaysDoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface DoctorService {
@@ -22,4 +24,6 @@ public interface DoctorService {
     void cancelVisitToAccept(int visitId);
     void reserveAVisit(int patientId, int visitId, String visitDescription);
     void changeOneDayDescription(int dateId, String description);
+
+    void createMultiDaysDoctorTimetable(MultiDaysDoctorTimetableModel multiDaysDoctorTimetableModel) throws ParseException;
 }

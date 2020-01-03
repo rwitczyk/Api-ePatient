@@ -4,6 +4,7 @@ import com.ePatient.Entities.BookAVisitEntity;
 import com.ePatient.Entities.DoctorEntity;
 import com.ePatient.Models.BookAVisitModel;
 import com.ePatient.Models.DoctorTimetableModel;
+import com.ePatient.Models.MultiDaysDoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 import com.ePatient.Services.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -104,6 +106,12 @@ public class DoctorEndpoint {
     @PostMapping("doctor/changeOneDayDescription/{dateId}/{description}")
     public ResponseEntity changeOneDayDescription(@PathVariable int dateId, @PathVariable String description){
         doctorService.changeOneDayDescription(dateId, description);
+        return ResponseEntity.ok("");
+    }
+
+    @PostMapping("doctor/createMultiDaysTimeTable")
+    public ResponseEntity createMultiDaysDoctorTimetable(@RequestBody MultiDaysDoctorTimetableModel multiDaysDoctorTimetableModel) throws ParseException {
+        doctorService.createMultiDaysDoctorTimetable(multiDaysDoctorTimetableModel);
         return ResponseEntity.ok("");
     }
 }

@@ -10,6 +10,7 @@ import com.ePatient.Exceptions.DoctorNotFoundException;
 import com.ePatient.Exceptions.VisitAlreadyExistsException;
 import com.ePatient.Models.BookAVisitModel;
 import com.ePatient.Models.DoctorTimetableModel;
+import com.ePatient.Models.MultiDaysDoctorTimetableModel;
 import com.ePatient.Models.OneVisitModel;
 import com.ePatient.Repository.BookAVisitRepository;
 import com.ePatient.Repository.DatesRepository;
@@ -26,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,10 +143,9 @@ public class DoctorServiceImpl implements DoctorService {
             for (DatesEntity oneDate : listDoctorDates) {
                 if (oneDate.getDate().toString().substring(0, 10).equals(oneVisitModel.getVisitDate())) {
                     List<OneVisitEntity> listOfOneVisitEntities = oneDate.getListOfOneVisitEntities();
-                    listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getDoctorId(), oneVisitModel.getPatientId(), oneVisitEntity.getFromTime(), oneVisitEntity.getToTime(), oneDate.getDate(), "false", oneVisitModel.getAdditionalDescription()));
-
                     setVisitsFromTimeOrToTime(oneVisitEntity, oneDate);
-                    oneDate.setDate(oneDate.getDate());
+
+                    listOfOneVisitEntities.add(new OneVisitEntity(oneVisitModel.getDoctorId(), oneVisitModel.getPatientId(), oneVisitEntity.getFromTime(), oneVisitEntity.getToTime(), oneDate.getDate(), "false", oneVisitModel.getAdditionalDescription()));
                     break;
                 }
             }
@@ -247,6 +248,87 @@ public class DoctorServiceImpl implements DoctorService {
         logger.info("Zmieniam opis dnia");
     }
 
+    @Override
+    public void createMultiDaysDoctorTimetable(MultiDaysDoctorTimetableModel multiDaysDoctorTimetableModel) throws ParseException {
+        DoctorEntity doctorEntity = doctorRepository.getDoctorByDoctorId(multiDaysDoctorTimetableModel.getDoctorId());
+
+        List<DatesEntity> list = doctorEntity.getDays();
+
+        String[] rangeDateToParse = multiDaysDoctorTimetableModel.getRangeDates().split(" - ");
+        Instant startRangeDate, endRangeDate;
+        startRangeDate = new SimpleDateFormat("MM/dd/yyyy").parse(rangeDateToParse[0]).toInstant().plusSeconds(ONEDAYSECONDS);
+        endRangeDate = new SimpleDateFormat("MM/dd/yyyy").parse(rangeDateToParse[1]).toInstant().plusSeconds(ONEDAYSECONDS);
+
+        if (list != null) {
+            for (DatesEntity oneDate : list) {
+                if (oneDate.getDate().isAfter(startRangeDate) && oneDate.getDate().isBefore(endRangeDate)) {
+                    switch (oneDate.getDate().atZone(ZoneId.of("UTC")).getDayOfWeek()) {
+                        case MONDAY: {
+                            if (multiDaysDoctorTimetableModel.isMondayCheckbox()) {
+                                prepareAllVisitsForOneDay(oneDate,
+                                        oneDate.getDate(),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getMondayVisitsFrom().getHour(), multiDaysDoctorTimetableModel.getMondayVisitsFrom().getMinute()),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getMondayVisitsTo().getHour(), multiDaysDoctorTimetableModel.getMondayVisitsTo().getMinute()),
+                                        (multiDaysDoctorTimetableModel.getMondayVisitsLength().getHour() * 60) + multiDaysDoctorTimetableModel.getMondayVisitsLength().getMinute(),
+                                        multiDaysDoctorTimetableModel.getDoctorId());
+                            }
+                            break;
+                        }
+                        case TUESDAY: {
+                            if (multiDaysDoctorTimetableModel.isTuesdayCheckbox()) {
+                                prepareAllVisitsForOneDay(oneDate,
+                                        oneDate.getDate(),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getTuesdayVisitsFrom().getHour(), multiDaysDoctorTimetableModel.getTuesdayVisitsFrom().getMinute()),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getTuesdayVisitsTo().getHour(), multiDaysDoctorTimetableModel.getTuesdayVisitsTo().getMinute()),
+                                        (multiDaysDoctorTimetableModel.getTuesdayVisitsLength().getHour() * 60) + multiDaysDoctorTimetableModel.getTuesdayVisitsLength().getMinute(),
+                                        multiDaysDoctorTimetableModel.getDoctorId());
+                            }
+                            break;
+                        }
+                        case WEDNESDAY: {
+                            if (multiDaysDoctorTimetableModel.isWednesdayCheckbox()) {
+                                prepareAllVisitsForOneDay(oneDate,
+                                        oneDate.getDate(),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getWednesdayVisitsFrom().getHour(), multiDaysDoctorTimetableModel.getWednesdayVisitsFrom().getMinute()),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getWednesdayVisitsTo().getHour(), multiDaysDoctorTimetableModel.getWednesdayVisitsTo().getMinute()),
+                                        (multiDaysDoctorTimetableModel.getWednesdayVisitsLength().getHour() * 60) + multiDaysDoctorTimetableModel.getWednesdayVisitsLength().getMinute(),
+                                        multiDaysDoctorTimetableModel.getDoctorId());
+                            }
+                            break;
+                        }
+                        case THURSDAY: {
+                            if (multiDaysDoctorTimetableModel.isThursdayCheckbox()) {
+                                prepareAllVisitsForOneDay(oneDate,
+                                        oneDate.getDate(),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getThursdayVisitsFrom().getHour(), multiDaysDoctorTimetableModel.getThursdayVisitsFrom().getMinute()),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getThursdayVisitsTo().getHour(), multiDaysDoctorTimetableModel.getThursdayVisitsTo().getMinute()),
+                                        (multiDaysDoctorTimetableModel.getThursdayVisitsLength().getHour() * 60) + multiDaysDoctorTimetableModel.getThursdayVisitsLength().getMinute(),
+                                        multiDaysDoctorTimetableModel.getDoctorId());
+                            }
+                            break;
+                        }
+                        case FRIDAY: {
+                            if (multiDaysDoctorTimetableModel.isFridayCheckbox()) {
+                                prepareAllVisitsForOneDay(oneDate,
+                                        oneDate.getDate(),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getFridayVisitsFrom().getHour(), multiDaysDoctorTimetableModel.getFridayVisitsFrom().getMinute()),
+                                        LocalTime.of(multiDaysDoctorTimetableModel.getFridayVisitsTo().getHour(), multiDaysDoctorTimetableModel.getFridayVisitsTo().getMinute()),
+                                        (multiDaysDoctorTimetableModel.getFridayVisitsLength().getHour() * 60) + multiDaysDoctorTimetableModel.getFridayVisitsLength().getMinute(),
+                                        multiDaysDoctorTimetableModel.getDoctorId());
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            doctorEntity.setDays(list);
+        } else {
+            throw new CollectionIsNullException("Nie zainicjalizowana lista dni doktora!");
+        }
+
+        doctorRepository.save(doctorEntity);
+    }
+
     private void setVisitsFromTimeOrToTime(OneVisitEntity oneVisitEntity, DatesEntity oneDate) {
         if (oneDate.getVisitsFromTime() == null) {
             oneDate.setVisitsFromTime(oneVisitEntity.getFromTime());
@@ -284,7 +366,7 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     private Instant parseStringToInstantObject(String date) throws ParseException {
-        Instant returnDate = new SimpleDateFormat("yyyy-MM-dd").parse(date.substring(0,10)).toInstant();
+        Instant returnDate = new SimpleDateFormat("yyyy-MM-dd").parse(date.substring(0, 10)).toInstant();
         returnDate = returnDate.plusSeconds(ONEDAYSECONDS);
         return returnDate;
     }

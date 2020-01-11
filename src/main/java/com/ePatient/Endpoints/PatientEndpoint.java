@@ -61,7 +61,7 @@ public class PatientEndpoint {
     }
 
     @GetMapping("patient/getAllPatientVisits/{patientId}")
-    public ResponseEntity<List<PatientVisitsModel>> getAllPatientVisnntitsByPatientId(@PathVariable int patientId) {
+    public ResponseEntity<List<PatientVisitsModel>> getAllPatientVisitsByPatientId(@PathVariable int patientId) {
         List<PatientVisitsModel> patientVisits = patientService.getAllPatientVisitsByPatientId(patientId);
         return new ResponseEntity<>(patientVisits, HttpStatus.OK);
     }

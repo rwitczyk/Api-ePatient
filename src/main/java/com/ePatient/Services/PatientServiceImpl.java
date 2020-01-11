@@ -117,6 +117,7 @@ public class PatientServiceImpl implements PatientService {
                 .toTime(oneVisit.getToTime())
                 .isBusy(oneVisit.getIsBusy())
                 .additionalDescription(oneVisit.getAdditionalDescription())
+                .additionalDoctorDescription(oneVisit.getAdditionalDoctorDescription())
                 .visitDate(oneVisit.getVisitDate())
                 .build();
     }

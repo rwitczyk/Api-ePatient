@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -107,6 +108,17 @@ public class DoctorEndpoint {
     public ResponseEntity changeOneDayDescription(@PathVariable int dateId, @PathVariable String description){
         doctorService.changeOneDayDescription(dateId, description);
         return ResponseEntity.ok("");
+    }
+
+    @PostMapping("doctor/changeOneVisitDoctorDescription/{visitId}/{doctorDescription}")
+    public ResponseEntity changeOneVisitDoctorDescription(@PathVariable int visitId, @PathVariable String doctorDescription){
+        doctorService.changeOneVisitDoctorDescription(visitId, doctorDescription);
+        return ResponseEntity.ok("");
+    }
+
+    @GetMapping("visit/description/{visitId}")
+    public ResponseEntity getOneVisitDoctorDescription(@PathVariable int visitId) {
+        return new ResponseEntity<>(Collections.singleton(doctorService.getOneVisitDoctorDescription(visitId)), HttpStatus.OK);
     }
 
     @PostMapping("doctor/createMultiDaysTimeTable")

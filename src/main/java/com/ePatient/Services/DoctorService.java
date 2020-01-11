@@ -24,6 +24,7 @@ public interface DoctorService {
     void cancelVisitToAccept(int visitId);
     void reserveAVisit(int patientId, int visitId, String visitDescription);
     void changeOneDayDescription(int dateId, String description);
-
+    void changeOneVisitDoctorDescription(int visitId, String doctorDescription);
+    String getOneVisitDoctorDescription(int visitId);
     void createMultiDaysDoctorTimetable(MultiDaysDoctorTimetableModel multiDaysDoctorTimetableModel) throws ParseException;
 }

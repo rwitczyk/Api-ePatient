@@ -249,6 +249,19 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public void changeOneVisitDoctorDescription(int visitId, String doctorDescription) {
+        OneVisitEntity oneVisit = oneVisitRepository.getByVisitId(visitId);
+        oneVisit.setAdditionalDoctorDescription(doctorDescription);
+        logger.info("Zmieniam opis wizyty o id:" + visitId);
+    }
+
+    @Override
+    public String getOneVisitDoctorDescription(int visitId) {
+        OneVisitEntity oneVisit = oneVisitRepository.getByVisitId(visitId);
+        return oneVisit.getAdditionalDoctorDescription();
+    }
+
+    @Override
     public void createMultiDaysDoctorTimetable(MultiDaysDoctorTimetableModel multiDaysDoctorTimetableModel) throws ParseException {
         DoctorEntity doctorEntity = doctorRepository.getDoctorByDoctorId(multiDaysDoctorTimetableModel.getDoctorId());
 

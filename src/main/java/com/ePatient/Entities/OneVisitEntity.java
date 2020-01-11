@@ -37,6 +37,8 @@ public class OneVisitEntity {
 
     String additionalDescription;
 
+    String additionalDoctorDescription;
+
     public OneVisitEntity(int doctorId, int patientId, LocalTime fromTime, LocalTime toTime, Instant visitDate, String isBusy, String additionalDescription) {
         this.doctorId = doctorId;
         this.patientId = patientId;

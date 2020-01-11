@@ -25,4 +25,6 @@ public class PatientVisitsModel {
     String isBusy;
 
     String additionalDescription;
+
+    String additionalDoctorDescription;
 }
